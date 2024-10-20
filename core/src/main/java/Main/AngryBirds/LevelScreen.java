@@ -2,7 +2,7 @@ package Main.AngryBirds;
 
 import com.badlogic.gdx.Screen;
 
-// Screen 1: Main Page
+// Screen 3: Levels Page
 
 public class LevelScreen implements Screen{
 

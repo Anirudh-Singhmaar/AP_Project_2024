@@ -10,6 +10,8 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.Game;
 
+// Screen 1: Main Page
+
 public class MainScreen implements Screen {
     private Game game;  // Changed 'Game' to 'game' for clarity
     private ShapeRenderer shapeRenderer;

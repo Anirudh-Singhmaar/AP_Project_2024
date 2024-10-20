@@ -4,17 +4,17 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.Game;
+
+// Screen 2: Main Page
 
 public class LoadScreen implements Screen {
     private Game game;  // Changed 'Game' to 'game' for clarity
     private ShapeRenderer shapeRenderer;
 
-    final float rectWidth = 200;
-    final float rectHeight = 75;
+    final float squareSize = 100;
     final float paddingTop = 225;
     final float paddingBottom = 200;
 
@@ -52,28 +52,28 @@ public class LoadScreen implements Screen {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
         // Calculate the Load A Position with padding
-        float rect1X = camera.position.x - (camera.viewportWidth / 2) + (camera.viewportWidth / 2 - rectWidth / 2) - 225;
-        float rect1Y = camera.position.y + (camera.viewportHeight / 2) - paddingTop - rectHeight / 2;
+        float rect1X = camera.position.x - (camera.viewportWidth / 2) + (camera.viewportWidth / 2 - squareSize / 2) - 275;
+        float rect1Y = camera.position.y + (camera.viewportHeight / 2) - paddingTop - squareSize / 2;
         shapeRenderer.setColor(Color.RED);
-        shapeRenderer.rect(rect1X, rect1Y, rectWidth, rectHeight);
+        shapeRenderer.rect(rect1X, rect1Y, squareSize, squareSize);
 
         // Calculate the Load B Position with padding
-        float rect2X = camera.position.x - (camera.viewportWidth / 2) + (camera.viewportWidth / 2 - rectWidth / 2) + 225;
-        float rect2Y = camera.position.y + (camera.viewportHeight / 2) - paddingTop - rectHeight / 2;
+        float rect2X = camera.position.x - (camera.viewportWidth / 2) + (camera.viewportWidth / 2 - squareSize / 2) + 75;
+        float rect2Y = camera.position.y + (camera.viewportHeight / 2) - paddingTop - squareSize / 2;
         shapeRenderer.setColor(Color.BLUE);
-        shapeRenderer.rect(rect2X, rect2Y, rectWidth, rectHeight);
+        shapeRenderer.rect(rect2X, rect2Y, squareSize, squareSize);
 
         // Calculate the Load C Position with padding
-        float rect3X = camera.position.x - (camera.viewportWidth / 2) + (camera.viewportWidth / 2 - rectWidth / 2) - 225;
-        float rect3Y = camera.position.y - (camera.viewportHeight / 2) + paddingBottom - rectHeight / 2;
+        float rect3X = camera.position.x - (camera.viewportWidth / 2) + (camera.viewportWidth / 2 - squareSize/ 2) - 275;
+        float rect3Y = camera.position.y - (camera.viewportHeight / 2) + paddingBottom - squareSize/ 2;
         shapeRenderer.setColor(Color.GREEN);
-        shapeRenderer.rect(rect3X, rect3Y, rectWidth, rectHeight);
+        shapeRenderer.rect(rect3X, rect3Y, squareSize, squareSize);
 
         // Calculate the Load D Position with padding
-        float rect4X = camera.position.x - (camera.viewportWidth / 2) + (camera.viewportWidth / 2 - rectWidth / 2) + 225;
-        float rect4Y = camera.position.y - (camera.viewportHeight / 2) + paddingBottom - rectHeight / 2;
+        float rect4X = camera.position.x - (camera.viewportWidth / 2) + (camera.viewportWidth / 2 - squareSize / 2) + 75;
+        float rect4Y = camera.position.y - (camera.viewportHeight / 2) + paddingBottom - squareSize/ 2;
         shapeRenderer.setColor(Color.BLACK);
-        shapeRenderer.rect(rect4X, rect4Y, rectWidth, rectHeight);
+        shapeRenderer.rect(rect4X, rect4Y, squareSize, squareSize);
 
         // End ShapeRenderer once all shapes are drawn
         shapeRenderer.end();
