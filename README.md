@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Angry_Birds
 
 A [libGDX](https://libgdx.com/) project generated with [gdx-liftoff](https://github.com/libgdx/gdx-liftoff).
@@ -31,3 +32,8 @@ Useful Gradle tasks and flags:
 
 Note that most tasks that are not specific to a single project can be run with `name:` prefix, where the `name` should be replaced with the ID of a specific project.
 For example, `core:clean` removes `build` folder only from the `core` project.
+=======
+# AP_Project_2024
+
+Abhishek was here
+>>>>>>> 0cf178d27e23c037e4b27af1c3a71dc5da3a0776
