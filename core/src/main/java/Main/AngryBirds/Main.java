@@ -1,10 +1,9 @@
 package Main.AngryBirds;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.utils.ScreenUtils;
 
 public class Main extends Game {
 

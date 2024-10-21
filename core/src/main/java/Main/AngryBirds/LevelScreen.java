@@ -101,21 +101,21 @@ public class LevelScreen implements Screen{
             if (mousePos.x >= centerX - offset - squareSize / 2 && mousePos.x <= centerX - offset + squareSize / 2
                 && mousePos.y >= centerY - squareSize / 2 && mousePos.y <= centerY + squareSize / 2) {
                 // Switch to the load screen (assuming LoadScreen exists)
-                game.setScreen(new LoadScreen(game));
+                game.setScreen(new Level_1(game));
             }
 
             // Example for checking Level 2's square:
             if (mousePos.x >= centerX - squareSize / 2 && mousePos.x <= centerX + squareSize / 2
                 && mousePos.y >= centerY - squareSize / 2 && mousePos.y <= centerY + squareSize / 2) {
                 // Switch to the load screen (assuming LoadScreen exists)
-                game.setScreen(new LoadScreen(game));
+                game.setScreen(new Level_2(game));
             }
 
             // Example for checking Level 2's square:
             if (mousePos.x >= centerX + squareSize / 2 && mousePos.x <= centerX + offset + squareSize / 2
                 && mousePos.y >= centerY - squareSize / 2 && mousePos.y <= centerY + squareSize / 2) {
                 // Switch to the load screen (assuming LoadScreen exists)
-                game.setScreen(new LoadScreen(game));
+                game.setScreen(new Level_3(game));
             }
         }
     }
