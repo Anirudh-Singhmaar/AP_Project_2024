@@ -30,7 +30,7 @@ public class LoadScreen implements Screen {
         shapeRenderer = new ShapeRenderer();
 
         camera = new OrthographicCamera();
-        viewport = new FitViewport(800, 600, camera);
+        viewport = new FitViewport(1280, 720, camera);
         viewport.apply();
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);  // Set camera position
         camera.update();

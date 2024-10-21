@@ -33,7 +33,7 @@ public class MainScreen implements Screen {
         shapeRenderer = new ShapeRenderer();
 
         camera = new OrthographicCamera();
-        viewport = new FitViewport(800, 600, camera);
+        viewport = new FitViewport(1280, 720, camera);
         viewport.apply();
     }
 
@@ -73,7 +73,7 @@ public class MainScreen implements Screen {
         // Calculate the Settings Button's Position with padding
         float rect4X = camera.position.x - (camera.viewportWidth / 2) + (camera.viewportWidth / 2 - rectWidth / 2) + 250;
         float rect4Y = camera.position.y - (camera.viewportHeight / 2) + paddingBottom - rectHeight / 2;
-        shapeRenderer.setColor(Color.BLACK);
+        shapeRenderer.setColor(0,0,0,0f);
         shapeRenderer.rect(rect4X, rect4Y, rectWidth, rectHeight);
 
         // End ShapeRenderer once all shapes are drawn

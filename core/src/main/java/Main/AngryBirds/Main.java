@@ -17,7 +17,7 @@ public class Main extends Game {
         // Initialize resources
         batch = new SpriteBatch();
         camera = new OrthographicCamera();
-        viewport = new FitViewport(800, 600, camera);
+        viewport = new FitViewport(1280, 720, camera);
 
         // Set the first screen (e.g., MainMenuScreen)
         this.setScreen(new MainScreen(this));
