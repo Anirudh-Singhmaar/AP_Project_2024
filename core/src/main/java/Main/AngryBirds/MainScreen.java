@@ -86,7 +86,7 @@ public class MainScreen implements Screen {
 
             // Convert mouse coordinates to world coordinates
             Vector3 mousePos = new Vector3(mouseX, mouseY, 0);
-            camera.unproject(mousePos);  // Convert the screen coordinates to world coordinates
+            camera.unproject(mousePos);
 
             // Check if the mouse is within the bounds of rect2
             if (mousePos.x >= rect2X && mousePos.x <= rect2X + rectWidth && mousePos.y >= rect2Y && mousePos.y <= rect2Y + rectHeight) {
@@ -96,14 +96,14 @@ public class MainScreen implements Screen {
 
             // Check if the mouse is within the bounds of rect3
             if (mousePos.x >= rect3X && mousePos.x <= rect3X + rectWidth && mousePos.y >= rect3Y && mousePos.y <= rect3Y + rectHeight) {
-                // Switch to the load screen
-                game.setScreen(new LevelScreen(game));  // Assuming you have a LoadScreen class
+                // Switch to the NewGame Levels Screen
+                game.setScreen(new LevelScreen(game));
             }
 
             // Check if the mouse is within the bounds of rect4
             if (mousePos.x >= rect4X && mousePos.x <= rect4X + rectWidth && mousePos.y >= rect4Y && mousePos.y <= rect4Y + rectHeight) {
-                // Switch to the load screen
-                game.setScreen(new LoadScreen(game));  // Assuming you have a LoadScreen class
+                // Closes the Application
+                Gdx.app.exit();
             }
         }
     }

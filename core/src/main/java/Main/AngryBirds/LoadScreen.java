@@ -77,6 +77,13 @@ public class LoadScreen implements Screen {
         shapeRenderer.setColor(Color.BLACK);
         shapeRenderer.rect(rect4X, rect4Y, squareSize, squareSize);
 
+        // Draw Circle in the Top Right Corner
+        shapeRenderer.setColor(Color.YELLOW); // Set color for the circle
+        float circleRadius = 50; // Define the radius of the circle
+        float circleX = camera.viewportWidth - circleRadius - 20; // Position 20 pixels from the right edge
+        float circleY = camera.viewportHeight - circleRadius - 20; // Position 20 pixels from the top edge
+        shapeRenderer.circle(circleX, circleY, circleRadius); // Draw the circle
+
         // End ShapeRenderer once all shapes are drawn
         shapeRenderer.end();
 
@@ -88,6 +95,16 @@ public class LoadScreen implements Screen {
             // Convert mouse coordinates to world coordinates
             Vector3 mousePos = new Vector3(mouseX, mouseY, 0);
             camera.unproject(mousePos);  // Convert the screen coordinates to world coordinates
+
+            // Check if the mouse is within the bounds of Circle
+            float dx = mousePos.x - circleX; // Distance in x direction
+            float dy = mousePos.y - circleY; // Distance in y direction
+            float distance = (float) Math.sqrt(dx * dx + dy * dy); // Calculate distance
+
+            if (distance <= circleRadius) {
+                // Switch to the load screen
+                game.setScreen(new MainScreen(game));  // Assuming you want to go back to LevelScreen
+            }
 
             // Check if the mouse is within the bounds of rect2
             if (mousePos.x >= rect1X && mousePos.x <= rect1X + squareSize && mousePos.y >= rect1Y && mousePos.y <= rect1Y + squareSize) {
