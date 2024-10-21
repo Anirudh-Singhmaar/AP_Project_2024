@@ -1,10 +1,12 @@
 package Main.AngryBirds;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
@@ -60,7 +62,8 @@ public class LevelScreen implements Screen{
         shapeRenderer.translate(centerX - offset, centerY, 0);  // Move to the position of the red square
         shapeRenderer.rotate(0, 0, 1, 45);  // Rotate by 45 degrees around the Z-axis
         shapeRenderer.setColor(Color.RED);
-        shapeRenderer.rect(-squareSize / 2, -squareSize / 2, squareSize, squareSize);  // Draw red square (centered at origin)
+        float square1XY = -squareSize/2;
+        shapeRenderer.rect(square1XY, square1XY, squareSize, squareSize);  // Draw red square (centered at origin)
         shapeRenderer.identity();  // Reset transformations
 
         // 2. Draw Level 2's Square (Center)
@@ -68,19 +71,53 @@ public class LevelScreen implements Screen{
         shapeRenderer.translate(centerX, centerY, 0);  // Move to the position of the blue square
         shapeRenderer.rotate(0, 0, 1, 45);  // Rotate by 45 degrees around the Z-axis
         shapeRenderer.setColor(Color.BLUE);
-        shapeRenderer.rect(-squareSize / 2, -squareSize / 2, squareSize, squareSize);  // Draw blue square (centered at origin)
-        shapeRenderer.identity();  // Reset transformations
+        float square2XY = -squareSize/2;
+        shapeRenderer.rect(square2XY, square2XY, squareSize, squareSize);  // Draw red square (centered at origin)
+        shapeRenderer.identity();   // Reset transformations
 
         // 3. Draw Level 3's Square (Right of center)
         shapeRenderer.identity();  // Reset any existing transformations
         shapeRenderer.translate(centerX + offset, centerY, 0);  // Move to the position of the green square
         shapeRenderer.rotate(0, 0, 1, 45);  // Rotate by 45 degrees around the Z-axis
         shapeRenderer.setColor(Color.GREEN);
-        shapeRenderer.rect(-squareSize / 2, -squareSize / 2, squareSize, squareSize);  // Draw green square (centered at origin)
-        shapeRenderer.identity();  // Reset transformations
+        float square3XY = -squareSize/2;
+        shapeRenderer.rect(square3XY, square3XY, squareSize, squareSize);  // Draw red square (centered at origin)
+        shapeRenderer.identity();   // Reset transformations
 
         // End ShapeRenderer once all shapes are drawn
         shapeRenderer.end();
+
+        // Handle Input: Detect Mouse Click and switch to load screen when squares are clicked
+        if (Gdx.input.isButtonJustPressed(0)) {  // Left mouse button
+            float mouseX = Gdx.input.getX();
+            float mouseY = Gdx.input.getY();
+
+            // Convert mouse coordinates to world coordinates
+            Vector3 mousePos = new Vector3(mouseX, mouseY, 0);
+            camera.unproject(mousePos);  // Convert the screen coordinates to world coordinates
+
+            // You can adjust this to calculate the correct bounds post rotation or simplify by checking original bounds if not rotated.
+            // Example for checking Level 1's square:
+            if (mousePos.x >= centerX - offset - squareSize / 2 && mousePos.x <= centerX - offset + squareSize / 2
+                && mousePos.y >= centerY - squareSize / 2 && mousePos.y <= centerY + squareSize / 2) {
+                // Switch to the load screen (assuming LoadScreen exists)
+                game.setScreen(new LoadScreen(game));
+            }
+
+            // Example for checking Level 2's square:
+            if (mousePos.x >= centerX - squareSize / 2 && mousePos.x <= centerX + squareSize / 2
+                && mousePos.y >= centerY - squareSize / 2 && mousePos.y <= centerY + squareSize / 2) {
+                // Switch to the load screen (assuming LoadScreen exists)
+                game.setScreen(new LoadScreen(game));
+            }
+
+            // Example for checking Level 2's square:
+            if (mousePos.x >= centerX + squareSize / 2 && mousePos.x <= centerX + offset + squareSize / 2
+                && mousePos.y >= centerY - squareSize / 2 && mousePos.y <= centerY + squareSize / 2) {
+                // Switch to the load screen (assuming LoadScreen exists)
+                game.setScreen(new LoadScreen(game));
+            }
+        }
     }
 
     @Override

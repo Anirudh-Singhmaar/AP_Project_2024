@@ -1,9 +1,11 @@
 package Main.AngryBirds;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.Game;
@@ -77,6 +79,40 @@ public class LoadScreen implements Screen {
 
         // End ShapeRenderer once all shapes are drawn
         shapeRenderer.end();
+
+        // Handle Input: Detect Mouse Click and switch to load screen when rect2, rect3, or rect4 is clicked
+        if (Gdx.input.isButtonJustPressed(0)) {  // 0 is the left mouse button
+            float mouseX = Gdx.input.getX();
+            float mouseY = Gdx.input.getY();
+
+            // Convert mouse coordinates to world coordinates
+            Vector3 mousePos = new Vector3(mouseX, mouseY, 0);
+            camera.unproject(mousePos);  // Convert the screen coordinates to world coordinates
+
+            // Check if the mouse is within the bounds of rect2
+            if (mousePos.x >= rect1X && mousePos.x <= rect1X + squareSize && mousePos.y >= rect1Y && mousePos.y <= rect1Y + squareSize) {
+                // Switch to the load screen
+                game.setScreen(new LevelScreen(game));  // Assuming you have a LoadScreen class
+            }
+
+            // Check if the mouse is within the bounds of rect2
+            if (mousePos.x >= rect2X && mousePos.x <= rect2X + squareSize && mousePos.y >= rect2Y && mousePos.y <= rect2Y + squareSize) {
+                // Switch to the load screen
+                game.setScreen(new LevelScreen(game));  // Assuming you have a LoadScreen class
+            }
+
+            // Check if the mouse is within the bounds of rect3
+            if (mousePos.x >= rect3X && mousePos.x <= rect3X + squareSize && mousePos.y >= rect3Y && mousePos.y <= rect3Y + squareSize) {
+                // Switch to the load screen
+                game.setScreen(new LevelScreen(game));  // Assuming you have a LoadScreen class
+            }
+
+            // Check if the mouse is within the bounds of rect4
+            if (mousePos.x >= rect4X && mousePos.x <= rect4X + squareSize && mousePos.y >= rect4Y && mousePos.y <= rect4Y + squareSize) {
+                // Switch to the load screen
+                game.setScreen(new LevelScreen(game));  // Assuming you have a LoadScreen class
+            }
+        }
     }
 
     @Override

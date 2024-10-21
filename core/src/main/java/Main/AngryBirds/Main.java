@@ -20,7 +20,7 @@ public class Main extends Game {
         viewport = new FitViewport(1280, 720, camera);
 
         // Set the first screen (e.g., MainMenuScreen)
-        this.setScreen(new LevelScreen(this));
+        this.setScreen(new MainScreen(this));
     }
 
     @Override

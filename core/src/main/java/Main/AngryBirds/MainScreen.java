@@ -80,7 +80,7 @@ public class MainScreen implements Screen {
         shapeRenderer.end();
 
         // Handle Input: Detect Mouse Click and switch to load screen when rect2, rect3, or rect4 is clicked
-        if (Gdx.input.isButtonPressed(0)) {  // 0 is the left mouse button
+        if (Gdx.input.isButtonJustPressed(0)) {  // 0 is the left mouse button
             float mouseX = Gdx.input.getX();
             float mouseY = Gdx.input.getY();
 
@@ -97,7 +97,7 @@ public class MainScreen implements Screen {
             // Check if the mouse is within the bounds of rect3
             if (mousePos.x >= rect3X && mousePos.x <= rect3X + rectWidth && mousePos.y >= rect3Y && mousePos.y <= rect3Y + rectHeight) {
                 // Switch to the load screen
-                game.setScreen(new LoadScreen(game));  // Assuming you have a LoadScreen class
+                game.setScreen(new LevelScreen(game));  // Assuming you have a LoadScreen class
             }
 
             // Check if the mouse is within the bounds of rect4
