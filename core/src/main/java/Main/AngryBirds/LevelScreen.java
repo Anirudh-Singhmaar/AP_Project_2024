@@ -5,6 +5,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -17,7 +19,13 @@ public class LevelScreen implements Screen{
     private ShapeRenderer shapeRenderer;
     private OrthographicCamera camera;
     private FitViewport viewport;
+    
+    private SpriteBatch spriteBatch;
+    private Texture BackTexture;
+    
     final float squareSize = 100;
+
+
 
     public LevelScreen(Game game) {  // Changed 'Game' to 'game' for clarity
         this.game = game;  // Renamed variable to match convention
@@ -32,6 +40,9 @@ public class LevelScreen implements Screen{
         viewport.apply();
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);  // Set camera position
         camera.update();
+        
+        spriteBatch = new SpriteBatch();
+        BackTexture = new Texture("Extras/Back.png");
     }
 
     @Override
@@ -90,6 +101,19 @@ public class LevelScreen implements Screen{
         float circleX = camera.viewportWidth - circleRadius - 20; // Position 20 pixels from the right edge
         float circleY = camera.viewportHeight - circleRadius - 20; // Position 20 pixels from the top edge
         shapeRenderer.circle(circleX, circleY, circleRadius); // Draw the circle
+        shapeRenderer.end();
+
+        // Begin sprite batch to draw the texture within the circle
+        spriteBatch.begin();
+
+        // Adjust the texture size to match the circle diameter (2 * circleRadius)
+        float textureWidth = 2 * circleRadius;
+        float textureHeight = 2 * circleRadius;
+
+        // Draw the texture at the same position as the circle, but adjusting the origin for texture drawing
+        spriteBatch.draw(BackTexture, circleX - circleRadius, circleY - circleRadius, textureWidth, textureHeight);
+
+        spriteBatch.end();
 
         // End ShapeRenderer once all shapes are drawn
         shapeRenderer.end();
