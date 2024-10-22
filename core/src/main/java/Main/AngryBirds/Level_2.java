@@ -63,7 +63,7 @@ public class Level_2 implements Screen {
         // Begin drawing shapes (rectangles for the box shape)
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         float paddingRight = 200;  // Padding from the right side of the screen
-        float rectWidth = 50;  // Width of the rectangles (for sides and top)
+        float rectWidth = 35;  // Width of the rectangles (for sides and top)
         float rectHeight = 200;  // Height of the vertical rectangles
         float topRectHeight = 50;  // Height of the top rectangle
         float bottomRectHeight = 20;  // Height of the bottom rectangle (floor)

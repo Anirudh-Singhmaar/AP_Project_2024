@@ -21,7 +21,7 @@ public class Level_1 implements Screen {
     private SpriteBatch spriteBatch;
     private Texture RedbirdTexture;  // Texture for the bird
     private Texture PinkbirdTexture;  // Texture for the bird
-    private Texture WoodTexture;
+    private Texture WoodTexture;  // New WoodTexture for the rectangles
 
     public Level_1(Game game) {
         this.game = game;
@@ -42,7 +42,7 @@ public class Level_1 implements Screen {
         // Load the texture for the bird from the Birds folder
         RedbirdTexture = new Texture("Birds/RED_Bird.png");  // Correct path to the bird.png file
         PinkbirdTexture = new Texture("Birds/Pink_Bird.png");  // Correct path to the bird.png file
-        WoodTexture = new Texture("Blocks/Wood.png");  // Correct path to the bird.png file
+        WoodTexture = new Texture("Blocks/Wood.png");  // Correct path to the wood texture file
     }
 
     @Override
@@ -56,14 +56,15 @@ public class Level_1 implements Screen {
         // Clear the screen
         ScreenUtils.clear(1f, 1f, 1f, 1f);
 
-        // Begin drawing shapes (rectangles for the box shape)
+        // Set projection for shape renderer and sprite batch
         shapeRenderer.setProjectionMatrix(camera.combined);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        spriteBatch.setProjectionMatrix(camera.combined);
 
-        // Padding and rectangle dimensions for the box shape
+        // Begin drawing shapes (rectangles for the box shape)
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         float paddingRight = 200;  // Padding from the right side of the screen
-        float rectWidth = 50;  // Width of the rectangles (for sides and top)
-        float rectHeight = 200;  // Height of the vertical rectangles
+        float rectWidth = 35;  // Width of the rectangles (for sides and top)
+        float rectHeight = 175;  // Height of the vertical rectangles
         float topRectHeight = 50;  // Height of the top rectangle
         float bottomRectHeight = 20;  // Height of the bottom rectangle (floor)
 
@@ -72,29 +73,26 @@ public class Level_1 implements Screen {
         float leftX = rightX - 200;  // X position for the left rectangle (200px to the left of the right rectangle)
         float bottomY = 50;  // Y position for the bottom rectangle (floor)
         float topY = bottomY + rectHeight;  // Y position for the top of the box
-        float verticalY = 70;  // Y position for the vertical rectangles (just above the floor)
+        float verticalY = bottomY + bottomRectHeight;  // Y position for the vertical rectangles (above the floor)
 
-        // Draw the left rectangle (vertical)
-        shapeRenderer.setColor(Color.BROWN);
-        shapeRenderer.rect(leftX, verticalY, rectWidth, rectHeight);
-
-        // Draw the right rectangle (vertical)
-        shapeRenderer.setColor(Color.BROWN);
-        shapeRenderer.rect(rightX, verticalY, rectWidth, rectHeight);
-
-        // Draw the top rectangle (horizontal)
-        shapeRenderer.setColor(Color.BROWN);
-        shapeRenderer.rect(leftX, topY, rightX - leftX + rectWidth, topRectHeight);
-        
-        // Draw the top rectangle (horizontal)
-        shapeRenderer.setColor(Color.BROWN);
-        shapeRenderer.rect(leftX, bottomY, rightX - leftX + rectWidth, topRectHeight);
-        
         // Draw the bottom rectangle (floor)
         shapeRenderer.setColor(Color.GRAY);  // Set color for the floor
         shapeRenderer.rect(0, bottomY, camera.viewportWidth, bottomRectHeight);  // Draw the floor
-
         shapeRenderer.end();
+
+        // Begin drawing the wood rectangles with SpriteBatch
+        spriteBatch.begin();
+        // Draw the left rectangle (vertical) using WoodTexture
+        spriteBatch.draw(WoodTexture, leftX, verticalY, rectWidth, rectHeight);
+
+        // Draw the right rectangle (vertical) using WoodTexture
+        spriteBatch.draw(WoodTexture, rightX, verticalY, rectWidth, rectHeight);
+
+        // Draw the top rectangle (horizontal) using WoodTexture
+        spriteBatch.draw(WoodTexture, leftX, topY, rightX - leftX + rectWidth, topRectHeight);
+
+        // End SpriteBatch
+        spriteBatch.end();
 
         // Begin drawing sprites with SpriteBatch
         spriteBatch.begin();
@@ -143,6 +141,6 @@ public class Level_1 implements Screen {
         spriteBatch.dispose();  // Dispose of SpriteBatch
         RedbirdTexture.dispose();
         PinkbirdTexture.dispose();
-        WoodTexture.dispose();
+        WoodTexture.dispose();  // Dispose of WoodTexture
     }
 }
