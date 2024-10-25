@@ -109,7 +109,6 @@ public class Level_1 implements Screen {
         spriteBatch.end();
 
         // Begin drawing the Glass rectangles with SpriteBatch
-        
         spriteBatch.begin();
         // Draw the left rectangle (vertical) using GlassTexture
         spriteBatch.draw(GlassTexture, leftX, verticalY, rectWidth, rectHeight);
