@@ -19,6 +19,11 @@ public class LoadScreen implements Screen {
     private ShapeRenderer shapeRenderer;
 
     private SpriteBatch spriteBatch;
+    private Texture BackGround;
+    private Texture Load_A;
+    private Texture Load_B;
+    private Texture Load_C;
+    private Texture Load_D;
     private Texture BackTexture;
 
     final float squareSize = 100;

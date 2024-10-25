@@ -21,6 +21,7 @@ public class Level_1 implements Screen {
 
     // Declare SpriteBatch and Texture
     private SpriteBatch spriteBatch;
+    private Texture BackGround;
     private Texture RedbirdTexture;  // Texture for the bird
     private Texture PinkbirdTexture;  // Texture for the bird
     private Texture WoodTexture;  // New WoodTexture for the rectangles

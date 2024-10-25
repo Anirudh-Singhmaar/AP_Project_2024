@@ -21,6 +21,10 @@ public class LevelScreen implements Screen{
     private FitViewport viewport;
     
     private SpriteBatch spriteBatch;
+    private Texture BackGround;
+    private Texture Level_1;
+    private Texture Level_2;
+    private Texture Level_3;
     private Texture BackTexture;
     
     final float squareSize = 100;
