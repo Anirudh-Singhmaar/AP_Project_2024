@@ -22,9 +22,9 @@ public class LevelScreen implements Screen{
     
     private SpriteBatch spriteBatch;
     private Texture BackGround;
-    // private Texture Level_1;
-    // private Texture Level_2;
-    // private Texture Level_3;
+    private Texture Level_1;
+    private Texture Level_2;
+    private Texture Level_3;
     private Texture BackTexture;
     
     final float squareSize = 100;
@@ -47,6 +47,9 @@ public class LevelScreen implements Screen{
         
         spriteBatch = new SpriteBatch();
         BackGround = new Texture("BackGround/Background.jpg");
+        Level_1 = new Texture("Level_Buttons/Level_1.png");
+        Level_2 = new Texture("Level_Buttons/Level_2.png");
+        Level_3 = new Texture("Level_Buttons/Level_3.png");
         BackTexture = new Texture("Extras/Back.png");
     }
 

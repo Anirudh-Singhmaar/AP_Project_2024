@@ -48,7 +48,7 @@ public class Level_1 implements Screen {
         BackGround = new Texture("BackGround/LevelBackground.jpg");
         RedbirdTexture = new Texture("Birds/RED_Bird.png");  // Correct path to the bird.png file
         PinkbirdTexture = new Texture("Birds/PINK_Bird.png");  // Correct path to the bird.png file
-        GlassTexture = new Texture("Blocks/Glass.png");  // Correct path to the wood texture file
+        GlassTexture = new Texture("Blocks/Glass.png");  // Correct path to the Glass texture file
         CatapultTexture = new Texture("Extras/Catapult.png");
         BackTexture = new Texture("Extras/Back.png");
 
@@ -108,7 +108,8 @@ public class Level_1 implements Screen {
 
         spriteBatch.end();
 
-        // Begin drawing the wood rectangles with SpriteBatch
+        // Begin drawing the Glass rectangles with SpriteBatch
+        
         spriteBatch.begin();
         // Draw the left rectangle (vertical) using GlassTexture
         spriteBatch.draw(GlassTexture, leftX, verticalY, rectWidth, rectHeight);
