@@ -45,9 +45,10 @@ public class Level_3 implements Screen {
         spriteBatch = new SpriteBatch();
 
         // Load the texture for the bird from the Birds folder
+        BackGround = new Texture("BackGround/LevelBackground.jpg");
         RedbirdTexture = new Texture("Birds/RED_Bird.png");  // Correct path to the bird.png file
         PinkbirdTexture = new Texture("Birds/PINK_Bird.png");  // Correct path to the bird.png file
-        StoneTexture = new Texture("Blocks/Stone.png");  // Correct path to the stone texture file
+        StoneTexture = new Texture("Blocks/Stone.png");  // Correct path to the wood texture file
         CatapultTexture = new Texture("Extras/Catapult.png");
         BackTexture = new Texture("Extras/Back.png");
 
@@ -63,6 +64,10 @@ public class Level_3 implements Screen {
     public void render(float delta) {
         // Clear the screen
         ScreenUtils.clear(1f, 1f, 1f, 1f);
+
+        spriteBatch.begin();
+        spriteBatch.draw(BackGround, 0, 0, camera.viewportWidth, camera.viewportHeight);  // Draw the background
+        spriteBatch.end();
 
         // Set projection for shape renderer and sprite batch
         shapeRenderer.setProjectionMatrix(camera.combined);
@@ -83,14 +88,9 @@ public class Level_3 implements Screen {
         float topY = bottomY + rectHeight;  // Y position for the top of the box
         float verticalY = bottomY + bottomRectHeight;  // Y position for the vertical rectangles (above the floor)
 
-        // Draw the bottom rectangle (floor)
-        shapeRenderer.setColor(Color.GRAY);  // Set color for the floor
-        shapeRenderer.rect(0, bottomY, camera.viewportWidth, bottomRectHeight);  // Draw the floor
-
-                
         // Draw Circle in the Top Right Corner
         shapeRenderer.setColor(Color.YELLOW); // Set color for the circle
-        float circleRadius = 50; // Define the radius of the circle
+        float circleRadius = 25; // Define the radius of the circle
         float circleX = camera.viewportWidth - circleRadius - 20; // Position 20 pixels from the right edge
         float circleY = camera.viewportHeight - circleRadius - 20; // Position 20 pixels from the top edge
         shapeRenderer.circle(circleX, circleY, circleRadius); // Draw the circle

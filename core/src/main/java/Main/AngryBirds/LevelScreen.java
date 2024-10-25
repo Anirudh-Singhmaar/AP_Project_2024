@@ -22,9 +22,9 @@ public class LevelScreen implements Screen{
     
     private SpriteBatch spriteBatch;
     private Texture BackGround;
-    private Texture Level_1;
-    private Texture Level_2;
-    private Texture Level_3;
+    // private Texture Level_1;
+    // private Texture Level_2;
+    // private Texture Level_3;
     private Texture BackTexture;
     
     final float squareSize = 100;
@@ -46,6 +46,7 @@ public class LevelScreen implements Screen{
         camera.update();
         
         spriteBatch = new SpriteBatch();
+        BackGround = new Texture("BackGround/Background.jpg");
         BackTexture = new Texture("Extras/Back.png");
     }
 
@@ -59,7 +60,9 @@ public class LevelScreen implements Screen{
     public void render(float delta) {
         // Clear the screen with a white background
         ScreenUtils.clear(1f, 1f, 1f, 1f);  // Set background to white
-
+        spriteBatch.begin();
+        spriteBatch.draw(BackGround, 0, 0, camera.viewportWidth, camera.viewportHeight);
+        spriteBatch.end();
         // Begin ShapeRenderer
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
@@ -98,25 +101,20 @@ public class LevelScreen implements Screen{
         float square3XY = -squareSize / 2;
         shapeRenderer.rect(square3XY, square3XY, squareSize, squareSize);  // Draw green square (centered at origin)
         shapeRenderer.identity();   // Reset transformations
+        
+        spriteBatch.begin();
+        spriteBatch.end();
 
-        // Draw Circle in the Top Right Corner
-        shapeRenderer.setColor(Color.YELLOW); // Set color for the circle
-        float circleRadius = 50; // Define the radius of the circle
-        float circleX = camera.viewportWidth - circleRadius - 20; // Position 20 pixels from the right edge
-        float circleY = camera.viewportHeight - circleRadius - 20; // Position 20 pixels from the top edge
-        shapeRenderer.circle(circleX, circleY, circleRadius); // Draw the circle
-        shapeRenderer.end();
-
-        // Begin sprite batch to draw the texture within the circle
         spriteBatch.begin();
 
-        // Adjust the texture size to match the circle diameter (2 * circleRadius)
+        // Draw the back button texture
+        float circleRadius = 35;
+        float circleX = camera.viewportWidth - circleRadius - 20;
+        float circleY = camera.viewportHeight - circleRadius - 20;
         float textureWidth = 2 * circleRadius;
         float textureHeight = 2 * circleRadius;
 
-        // Draw the texture at the same position as the circle, but adjusting the origin for texture drawing
         spriteBatch.draw(BackTexture, circleX - circleRadius, circleY - circleRadius, textureWidth, textureHeight);
-
         spriteBatch.end();
 
         // End ShapeRenderer once all shapes are drawn

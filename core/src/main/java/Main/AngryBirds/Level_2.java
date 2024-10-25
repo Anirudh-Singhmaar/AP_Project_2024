@@ -24,7 +24,7 @@ public class Level_2 implements Screen {
     private Texture BackGround;
     private Texture RedbirdTexture;  // Texture for the bird
     private Texture PinkbirdTexture;  // Texture for the bird
-    private Texture GlassTexture;  // New GlassTexture for the rectangles
+    private Texture WoodTexture;  // New WoodTexture for the rectangles
     private Texture CatapultTexture;
     private Texture BackTexture;
 
@@ -45,9 +45,10 @@ public class Level_2 implements Screen {
         spriteBatch = new SpriteBatch();
 
         // Load the texture for the bird from the Birds folder
+        BackGround = new Texture("BackGround/LevelBackground.jpg");
         RedbirdTexture = new Texture("Birds/RED_Bird.png");  // Correct path to the bird.png file
         PinkbirdTexture = new Texture("Birds/PINK_Bird.png");  // Correct path to the bird.png file
-        GlassTexture = new Texture("Blocks/Glass.png");  // Correct path to the wood texture file
+        WoodTexture = new Texture("Blocks/Wood.png");  // Correct path to the wood texture file
         CatapultTexture = new Texture("Extras/Catapult.png");
         BackTexture = new Texture("Extras/Back.png");
 
@@ -63,6 +64,10 @@ public class Level_2 implements Screen {
     public void render(float delta) {
         // Clear the screen
         ScreenUtils.clear(1f, 1f, 1f, 1f);
+
+        spriteBatch.begin();
+        spriteBatch.draw(BackGround, 0, 0, camera.viewportWidth, camera.viewportHeight);  // Draw the background
+        spriteBatch.end();
 
         // Set projection for shape renderer and sprite batch
         shapeRenderer.setProjectionMatrix(camera.combined);
@@ -83,14 +88,9 @@ public class Level_2 implements Screen {
         float topY = bottomY + rectHeight;  // Y position for the top of the box
         float verticalY = bottomY + bottomRectHeight;  // Y position for the vertical rectangles (above the floor)
 
-        // Draw the bottom rectangle (floor)
-        shapeRenderer.setColor(Color.GRAY);  // Set color for the floor
-        shapeRenderer.rect(0, bottomY, camera.viewportWidth, bottomRectHeight);  // Draw the floor
-
-                
         // Draw Circle in the Top Right Corner
         shapeRenderer.setColor(Color.YELLOW); // Set color for the circle
-        float circleRadius = 50; // Define the radius of the circle
+        float circleRadius = 25; // Define the radius of the circle
         float circleX = camera.viewportWidth - circleRadius - 20; // Position 20 pixels from the right edge
         float circleY = camera.viewportHeight - circleRadius - 20; // Position 20 pixels from the top edge
         shapeRenderer.circle(circleX, circleY, circleRadius); // Draw the circle
@@ -110,14 +110,14 @@ public class Level_2 implements Screen {
 
         // Begin drawing the wood rectangles with SpriteBatch
         spriteBatch.begin();
-        // Draw the left rectangle (vertical) using GlassTexture
-        spriteBatch.draw(GlassTexture, leftX, verticalY, rectWidth, rectHeight);
+        // Draw the left rectangle (vertical) using WoodTexture
+        spriteBatch.draw(WoodTexture, leftX, verticalY, rectWidth, rectHeight);
 
-        // Draw the right rectangle (vertical) using GlassTexture
-        spriteBatch.draw(GlassTexture, rightX, verticalY, rectWidth, rectHeight);
+        // Draw the right rectangle (vertical) using WoodTexture
+        spriteBatch.draw(WoodTexture, rightX, verticalY, rectWidth, rectHeight);
 
-        // Draw the top rectangle (horizontal) using GlassTexture
-        spriteBatch.draw(GlassTexture, leftX, topY, rightX - leftX + rectWidth, 2*topRectHeight/3);
+        // Draw the top rectangle (horizontal) using WoodTexture
+        spriteBatch.draw(WoodTexture, leftX, topY, rightX - leftX + rectWidth, 2*topRectHeight/3);
 
         // End SpriteBatch
         spriteBatch.end();
@@ -195,7 +195,7 @@ public class Level_2 implements Screen {
         spriteBatch.dispose();  // Dispose of SpriteBatch
         RedbirdTexture.dispose();
         PinkbirdTexture.dispose();
-        GlassTexture.dispose();  // Dispose of GlassTexture
+        WoodTexture.dispose();  // Dispose of WoodTexture
         CatapultTexture.dispose();
     }
 }
