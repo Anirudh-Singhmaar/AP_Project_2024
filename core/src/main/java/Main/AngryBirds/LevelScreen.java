@@ -12,10 +12,8 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
-// Screen 3: Levels Page
-
-public class LevelScreen implements Screen{
-    private Game game;  // Changed 'Game' to 'game' for clarity
+public class LevelScreen implements Screen {
+    private Game game;  
     private ShapeRenderer shapeRenderer;
     private OrthographicCamera camera;
     private FitViewport viewport;
@@ -27,25 +25,27 @@ public class LevelScreen implements Screen{
     private Texture Level_3;
     private Texture BackTexture;
     
-    final float squareSize = 100;
+    final float rectWidth = 200;
+    final float rectHeight = 75;
 
-
-
-    public LevelScreen(Game game) {  // Changed 'Game' to 'game' for clarity
-        this.game = game;  // Renamed variable to match convention
+    public LevelScreen(Game game) {  
+        this.game = game;  
     }
 
     @Override
     public void show() {
         shapeRenderer = new ShapeRenderer();
-
         camera = new OrthographicCamera();
         viewport = new FitViewport(1280, 720, camera);
         viewport.apply();
-        camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);  // Set camera position
+        camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);  
         camera.update();
         
         spriteBatch = new SpriteBatch();
+        BackGround = new Texture("BackGround/Background.jpg");
+        Level_1 = new Texture("Level_Buttons/Level_1.png");
+        Level_2 = new Texture("Level_Buttons/Level_2.png");
+        Level_3 = new Texture("Level_Buttons/Level_3.png");
         BackTexture = new Texture("Extras/Back.png");
     }
 
@@ -57,130 +57,105 @@ public class LevelScreen implements Screen{
 
     @Override
     public void render(float delta) {
-        // Clear the screen with a white background
-        ScreenUtils.clear(1f, 1f, 1f, 1f);  // Set background to white
-
-        // Begin ShapeRenderer
+        ScreenUtils.clear(1f, 1f, 1f, 1f);  
+        
+        // Draw the background
+        spriteBatch.begin();
+        spriteBatch.draw(BackGround, 0, 0, camera.viewportWidth, camera.viewportHeight);
+        spriteBatch.end();
+    
+        // Begin ShapeRenderer for rectangles
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-
-        // Common square size
-        float squareSize = 100;
-        float offset = 300; // Symmetrical offset between the squares
-
-        // Get the center of the camera
+        
+        float offset = 300; // Symmetrical offset between the rectangles
         float centerX = camera.position.x;
         float centerY = camera.position.y;
-
-        // 1. Draw Level 1's Square (Left of center)
-        shapeRenderer.identity();  // Reset any existing transformations
-        shapeRenderer.translate(centerX - offset, centerY, 0);  // Move to the position of the red square
-        shapeRenderer.rotate(0, 0, 1, 45);  // Rotate by 45 degrees around the Z-axis
-        shapeRenderer.setColor(Color.RED);
-        float square1XY = -squareSize / 2;
-        shapeRenderer.rect(square1XY, square1XY, squareSize, squareSize);  // Draw red square (centered at origin)
-        shapeRenderer.identity();  // Reset transformations
-
-        // 2. Draw Level 2's Square (Center)
-        shapeRenderer.identity();  // Reset any existing transformations
-        shapeRenderer.translate(centerX, centerY, 0);  // Move to the position of the blue square
-        shapeRenderer.rotate(0, 0, 1, 45);  // Rotate by 45 degrees around the Z-axis
-        shapeRenderer.setColor(Color.BLUE);
-        float square2XY = -squareSize / 2;
-        shapeRenderer.rect(square2XY, square2XY, squareSize, squareSize);  // Draw blue square (centered at origin)
-        shapeRenderer.identity();   // Reset transformations
-
-        // 3. Draw Level 3's Square (Right of center)
-        shapeRenderer.identity();  // Reset any existing transformations
-        shapeRenderer.translate(centerX + offset, centerY, 0);  // Move to the position of the green square
-        shapeRenderer.rotate(0, 0, 1, 45);  // Rotate by 45 degrees around the Z-axis
-        shapeRenderer.setColor(Color.GREEN);
-        float square3XY = -squareSize / 2;
-        shapeRenderer.rect(square3XY, square3XY, squareSize, squareSize);  // Draw green square (centered at origin)
-        shapeRenderer.identity();   // Reset transformations
-
-        // Draw Circle in the Top Right Corner
-        shapeRenderer.setColor(Color.YELLOW); // Set color for the circle
-        float circleRadius = 50; // Define the radius of the circle
-        float circleX = camera.viewportWidth - circleRadius - 20; // Position 20 pixels from the right edge
-        float circleY = camera.viewportHeight - circleRadius - 20; // Position 20 pixels from the top edge
-        shapeRenderer.circle(circleX, circleY, circleRadius); // Draw the circle
+    
+        // Draw Level 1's Rectangle (Left of center) - transparent red
+        shapeRenderer.setColor(new Color(1, 0, 0, 0.5f)); // Red with 50% transparency
+        shapeRenderer.rect(centerX - offset - rectWidth / 2, centerY - rectHeight / 2, rectWidth, rectHeight);
+        
+        // Draw Level 2's Rectangle (Center) - transparent blue
+        shapeRenderer.setColor(new Color(0, 0, 1, 0.5f)); // Blue with 50% transparency
+        shapeRenderer.rect(centerX - rectWidth / 2, centerY - rectHeight / 2, rectWidth, rectHeight);
+        
+        // Draw Level 3's Rectangle (Right of center) - transparent green
+        shapeRenderer.setColor(new Color(0, 1, 0, 0.5f)); // Green with 50% transparency
+        shapeRenderer.rect(centerX + offset - rectWidth / 2, centerY - rectHeight / 2, rectWidth, rectHeight);
+        
         shapeRenderer.end();
-
-        // Begin sprite batch to draw the texture within the circle
+    
+        // Begin drawing level sprites
         spriteBatch.begin();
-
-        // Adjust the texture size to match the circle diameter (2 * circleRadius)
-        float textureWidth = 2 * circleRadius;
-        float textureHeight = 2 * circleRadius;
-
-        // Draw the texture at the same position as the circle, but adjusting the origin for texture drawing
-        spriteBatch.draw(BackTexture, circleX - circleRadius, circleY - circleRadius, textureWidth, textureHeight);
-
+    
+        // Draw level sprites over the rectangles with exact matching dimensions
+        spriteBatch.draw(Level_1, centerX - offset - rectWidth / 2, centerY - rectHeight / 2, rectWidth, rectHeight); // Level 1 texture
+        spriteBatch.draw(Level_2, centerX - rectWidth / 2, centerY - rectHeight / 2, rectWidth, rectHeight); // Level 2 texture
+        spriteBatch.draw(Level_3, centerX + offset - rectWidth / 2, centerY - rectHeight / 2, rectWidth, rectHeight); // Level 3 texture
+        
+        // Draw the back button texture
+        float circleRadius = 35;
+        float circleX = camera.viewportWidth - circleRadius - 20;
+        float circleY = camera.viewportHeight - circleRadius - 20;
+        spriteBatch.draw(BackTexture, circleX - circleRadius, circleY - circleRadius, 2 * circleRadius, 2 * circleRadius);
         spriteBatch.end();
-
-        // End ShapeRenderer once all shapes are drawn
-        shapeRenderer.end();
-
-        // Handle Input: Detect Mouse Click and switch to load screen when squares are clicked
-        if (Gdx.input.isButtonJustPressed(0)) {  // Left mouse button
+    
+        // Handle Input: Detect Mouse Click
+        if (Gdx.input.isButtonJustPressed(0)) {  
             float mouseX = Gdx.input.getX();
             float mouseY = Gdx.input.getY();
-
-            // Convert mouse coordinates to world coordinates
             Vector3 mousePos = new Vector3(mouseX, mouseY, 0);
-            camera.unproject(mousePos);  // Convert the screen coordinates to world coordinates
-
+            camera.unproject(mousePos);  
+    
             // Check if the mouse is within the bounds of Circle
-            float dx = mousePos.x - circleX; // Distance in x direction
-            float dy = mousePos.y - circleY; // Distance in y direction
-            float distance = (float) Math.sqrt(dx * dx + dy * dy); // Calculate distance
-
+            float dx = mousePos.x - circleX; 
+            float dy = mousePos.y - circleY; 
+            float distance = (float) Math.sqrt(dx * dx + dy * dy); 
+    
             if (distance <= circleRadius) {
-                // Switch to the load screen
-                game.setScreen(new MainScreen(game));  // Assuming you want to go back to LevelScreen
+                game.setScreen(new MainScreen(game));  
             }
-
-            // Example for checking Level 1's square:
-            if (mousePos.x >= centerX - offset - squareSize / 2 && mousePos.x <= centerX - offset + squareSize / 2
-                && mousePos.y >= centerY - squareSize / 2 && mousePos.y <= centerY + squareSize / 2) {
-                // Switch to the load screen (assuming Level_1 exists)
+    
+            // Check if the user clicked Level 1's rectangle
+            if (mousePos.x >= centerX - offset - rectWidth / 2 && mousePos.x <= centerX - offset + rectWidth / 2 
+                && mousePos.y >= centerY - rectHeight / 2 && mousePos.y <= centerY + rectHeight / 2) {
                 game.setScreen(new Level_1(game));
             }
-
-            // Example for checking Level 2's square:
-            if (mousePos.x >= centerX - squareSize / 2 && mousePos.x <= centerX + squareSize / 2
-                && mousePos.y >= centerY - squareSize / 2 && mousePos.y <= centerY + squareSize / 2) {
-                // Switch to the load screen (assuming Level_2 exists)
+    
+            // Check if the user clicked Level 2's rectangle
+            if (mousePos.x >= centerX - rectWidth / 2 && mousePos.x <= centerX + rectWidth / 2 
+                && mousePos.y >= centerY - rectHeight / 2 && mousePos.y <= centerY + rectHeight / 2) {
                 game.setScreen(new Level_2(game));
             }
-
-            // Example for checking Level 3's square:
-            if (mousePos.x >= centerX + squareSize / 2 && mousePos.x <= centerX + offset + squareSize / 2
-                && mousePos.y >= centerY - squareSize / 2 && mousePos.y <= centerY + squareSize / 2) {
-                // Switch to the load screen (assuming Level_3 exists)
+    
+            // Check if the user clicked Level 3's rectangle
+            if (mousePos.x >= centerX + offset - rectWidth / 2 && mousePos.x <= centerX + offset + rectWidth / 2 
+                && mousePos.y >= centerY - rectHeight / 2 && mousePos.y <= centerY + rectHeight / 2) {
                 game.setScreen(new Level_3(game));
             }
         }
     }
+    
+    
+    @Override
+    public void pause() {}
 
     @Override
-    public void pause() {
-
-    }
+    public void resume() {}
 
     @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void hide() {
-
-    }
+    public void hide() {}
 
     @Override
     public void dispose() {
-
+        // Dispose of assets
+        spriteBatch.dispose();
+        shapeRenderer.dispose();
+        BackGround.dispose();
+        Level_1.dispose();
+        Level_2.dispose();
+        Level_3.dispose();
+        BackTexture.dispose();
     }
 }
