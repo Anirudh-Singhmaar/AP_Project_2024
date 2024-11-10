@@ -15,7 +15,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 public class LoadScreen implements Screen {
-    private final Game game;
+    private Game game;
     private SpriteBatch spriteBatch;
     private Texture BackGround;
     private Texture BackTexture;

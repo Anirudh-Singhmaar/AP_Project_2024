@@ -18,7 +18,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 public class LevelScreen implements Screen {
-    private final Game game;
+    private Game game;
     private ShapeRenderer shapeRenderer;
     private OrthographicCamera camera;
     private FitViewport viewport;
@@ -205,6 +205,7 @@ public class LevelScreen implements Screen {
         Level_2.dispose();
         Level_3.dispose();
         BackTexture.dispose();
+        stage.dispose();
     }
 }
  
