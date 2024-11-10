@@ -9,11 +9,16 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 public class LevelScreen implements Screen {
-    private Game game;
+    private final Game game;
     private ShapeRenderer shapeRenderer;
     private OrthographicCamera camera;
     private FitViewport viewport;
@@ -24,6 +29,7 @@ public class LevelScreen implements Screen {
     private Texture Level_2;
     private Texture Level_3;
     private Texture BackTexture;
+    private Stage stage;;
 
     final float rectWidth = 200;
     final float rectHeight = 75;
@@ -47,8 +53,48 @@ public class LevelScreen implements Screen {
         Level_2 = new Texture("Level_Buttons/Level_2.png");
         Level_3 = new Texture("Level_Buttons/Level_3.png");
         BackTexture = new Texture("Extras/Back.png");
-    }
+        Texture Level_1Texture = new Texture("Level_Buttons/Level_1.png");
+        Texture Level_2Texture = new Texture("Level_Buttons/Level_2.png");
+        Texture Level_3Texture = new Texture("Level_Buttons/Level_3.png");
+    
+        ImageButton Level_1Button = new ImageButton(new TextureRegionDrawable(Level_1Texture));
+        ImageButton Level_2Button = new ImageButton(new TextureRegionDrawable(Level_2Texture));
+        ImageButton Level_3Button = new ImageButton(new TextureRegionDrawable(Level_3Texture));
+        ImageButton backButton = new ImageButton(new TextureRegionDrawable(BackTexture));
+        float circleRadius = 35;
+        backButton.setSize(circleRadius * 2, circleRadius * 2);
+        backButton.setPosition(camera.viewportWidth - circleRadius * 2 - 20, camera.viewportHeight - circleRadius * 2 - 20);
+        Level_1Button.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(new LevelScreen(game));
+            }
+        });
 
+        Level_2Button.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(new LevelScreen(game));
+            }
+        });
+
+        Level_3Button.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(new LevelScreen(game));
+            }
+        });
+
+        backButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(new MainScreen(game));
+            }
+        });
+        stage.addActor(Level_1Button);
+        stage.addActor(Level_2Button);
+        stage.addActor(Level_3Button);
+        stage.addActor(backButton);}
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height, true);
@@ -136,7 +182,9 @@ public class LevelScreen implements Screen {
             }
         }
     }
+        
 
+    
 
     @Override
     public void pause() {}
@@ -159,3 +207,4 @@ public class LevelScreen implements Screen {
         BackTexture.dispose();
     }
 }
+ 
