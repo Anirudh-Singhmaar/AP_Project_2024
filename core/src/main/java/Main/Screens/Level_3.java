@@ -1,4 +1,4 @@
-package Main.AngryBirds;
+package Main.Screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -12,7 +12,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
-public class Level_2 implements Screen {
+public class Level_3 implements Screen {
 
     private Game game;
     private ShapeRenderer shapeRenderer;
@@ -24,11 +24,11 @@ public class Level_2 implements Screen {
     private Texture BackGround;
     private Texture RedbirdTexture;  // Texture for the bird
     private Texture PinkbirdTexture;  // Texture for the bird
-    private Texture WoodTexture;  // New WoodTexture for the rectangles
+    private Texture StoneTexture;  // New StoneTexture for the rectangles
     private Texture CatapultTexture;
     private Texture BackTexture;
 
-    public Level_2(Game game) {
+    public Level_3(Game game) {
         this.game = game;
     }
 
@@ -48,7 +48,7 @@ public class Level_2 implements Screen {
         BackGround = new Texture("BackGround/LevelBackground.jpg");
         RedbirdTexture = new Texture("Birds/RED_Bird.png");  // Correct path to the bird.png file
         PinkbirdTexture = new Texture("Birds/PINK_Bird.png");  // Correct path to the bird.png file
-        WoodTexture = new Texture("Blocks/Wood.png");  // Correct path to the wood texture file
+        StoneTexture = new Texture("Blocks/Stone.png");  // Correct path to the wood texture file
         CatapultTexture = new Texture("Extras/Catapult.png");
         BackTexture = new Texture("Extras/Back.png");
 
@@ -110,14 +110,14 @@ public class Level_2 implements Screen {
 
         // Begin drawing the wood rectangles with SpriteBatch
         spriteBatch.begin();
-        // Draw the left rectangle (vertical) using WoodTexture
-        spriteBatch.draw(WoodTexture, leftX, verticalY, rectWidth, rectHeight);
+        // Draw the left rectangle (vertical) using StoneTexture
+        spriteBatch.draw(StoneTexture, leftX, verticalY, rectWidth, rectHeight);
 
-        // Draw the right rectangle (vertical) using WoodTexture
-        spriteBatch.draw(WoodTexture, rightX, verticalY, rectWidth, rectHeight);
+        // Draw the right rectangle (vertical) using StoneTexture
+        spriteBatch.draw(StoneTexture, rightX, verticalY, rectWidth, rectHeight);
 
-        // Draw the top rectangle (horizontal) using WoodTexture
-        spriteBatch.draw(WoodTexture, leftX, topY, rightX - leftX + rectWidth, 2*topRectHeight/3);
+        // Draw the top rectangle (horizontal) using StoneTexture
+        spriteBatch.draw(StoneTexture, leftX, topY, rightX - leftX + rectWidth, 2*topRectHeight/3);
 
         // End SpriteBatch
         spriteBatch.end();
@@ -195,7 +195,7 @@ public class Level_2 implements Screen {
         spriteBatch.dispose();  // Dispose of SpriteBatch
         RedbirdTexture.dispose();
         PinkbirdTexture.dispose();
-        WoodTexture.dispose();  // Dispose of WoodTexture
+        StoneTexture.dispose();  // Dispose of StoneTexture
         CatapultTexture.dispose();
     }
 }

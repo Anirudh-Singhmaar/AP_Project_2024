@@ -1,10 +1,9 @@
-package Main.AngryBirds;
+package Main.Screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -27,8 +26,11 @@ public class Level_1 implements Screen {
     private World world;
     private Body redBirdBody1, pinkBirdBody, redBirdBody2, leftGlassBody, rightGlassBody, topGlassBody, catapultBody, groundBody;
 
+    private float backButtonX, backButtonY, backButtonRadius;  // Store the position and radius of the back button
+
     public Level_1(Game game) {
         this.game = game;
+        this.backButtonRadius = 35;  // Set the radius of the back button to 35
     }
 
     @Override
@@ -55,11 +57,20 @@ public class Level_1 implements Screen {
         createGlassBodies();
         createCatapultBody();
 
+        // Calculate the back button position (top-right corner)
+        backButtonX = camera.viewportWidth - 100; // Adjust the X position for the button
+        backButtonY = camera.viewportHeight - 50; // Adjust the Y position for the button
+
         // Set the input processor for back button
-        Gdx.input.setInputProcessor(new com.badlogic.gdx.InputAdapter() {
+        Gdx.input.setInputProcessor(new InputAdapter() {
             @Override
-            public boolean keyDown(int keycode) {
-                if (keycode == Input.Keys.ESCAPE) {
+            public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+                // Adjust screenY because libGDX's Y-axis increases downwards, while the camera Y-axis increases upwards
+                screenY = Gdx.graphics.getHeight() - screenY;  // Flip the Y coordinate
+
+                // Check if the touch is inside the circular back button
+                float distance = Vector2.dst(screenX, screenY, backButtonX, backButtonY);
+                if (distance <= backButtonRadius) {
                     goBackToPreviousScreen(); // Go back to the previous screen
                     return true;
                 }
@@ -135,7 +146,7 @@ public class Level_1 implements Screen {
     @Override
     public void render(float delta) {
         ScreenUtils.clear(1f, 1f, 1f, 1f);
-        world.step(1/60f, 6, 2);  // Update Box2D world
+        world.step(1 / 60f, 6, 2);  // Update Box2D world
 
         spriteBatch.begin();
         spriteBatch.draw(BackGround, 0, 0, camera.viewportWidth, camera.viewportHeight);
@@ -171,12 +182,19 @@ public class Level_1 implements Screen {
         float catapultY = catapultBody.getPosition().y - 62.5f;
         spriteBatch.draw(CatapultTexture, catapultX, catapultY, 52.5f, 125);
 
+        // Draw circular back button at the top-right corner
+        spriteBatch.draw(BackTexture, backButtonX - backButtonRadius, backButtonY - backButtonRadius, backButtonRadius * 2, backButtonRadius * 2);
+
         spriteBatch.end();
     }
 
     private void goBackToPreviousScreen() {
-        // Go back to the previous screen (replace this with the level or main menu screen)
-        game.setScreen(new Level_1(game)); // For example, it can return to this screen or another
+        game.setScreen(new LevelScreen(game));  // Assuming you have a MainMenu screen
+    }
+
+    @Override
+    public void hide() {
+        dispose();
     }
 
     @Override
@@ -186,18 +204,13 @@ public class Level_1 implements Screen {
     public void resume() {}
 
     @Override
-    public void hide() {
-        dispose();
-    }
-
-    @Override
     public void dispose() {
-        shapeRenderer.dispose();
         spriteBatch.dispose();
-        world.dispose();
+        BackGround.dispose();
         RedbirdTexture.dispose();
         PinkbirdTexture.dispose();
         GlassTexture.dispose();
         CatapultTexture.dispose();
+        BackTexture.dispose();
     }
 }

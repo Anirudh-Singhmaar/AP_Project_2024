@@ -1,4 +1,4 @@
-package Main.AngryBirds;
+package Main.Screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
