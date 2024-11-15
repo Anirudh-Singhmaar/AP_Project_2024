@@ -1,0 +1,57 @@
+{
+    "levels": [
+      {
+        "levelNumber": 1,
+        "objects": [
+          {
+            "type": "block",
+            "x": 100,
+            "y": 200,
+            "width": 50,
+            "height": 20,
+            "texture": "block_texture.png"
+          },
+          {
+            "type": "target",
+            "x": 300,
+            "y": 100,
+            "radius": 25,
+            "texture": "target_texture.png"
+          },
+          {
+            "type": "slingshot",
+            "x": 50,
+            "y": 150,
+            "texture": "slingshot_texture.png"
+          }
+        ]
+      },
+      {
+        "levelNumber": 2,
+        "objects": [
+          {
+            "type": "block",
+            "x": 200,
+            "y": 250,
+            "width": 70,
+            "height": 20,
+            "texture": "block_texture.png"
+          },
+          {
+            "type": "target",
+            "x": 400,
+            "y": 150,
+            "radius": 25,
+            "texture": "target_texture.png"
+          },
+          {
+            "type": "slingshot",
+            "x": 60,
+            "y": 160,
+            "texture": "slingshot_texture.png"
+          }
+        ]
+      }
+    ]
+  }
+  

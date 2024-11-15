@@ -1,5 +1,7 @@
 package Main.Screens;
 
+import java.util.List;
+
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -9,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -40,6 +43,8 @@ public class LevelScreen implements Screen {
         viewport.apply();
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
+        SpriteBatch batch = new SpriteBatch();
+        stage = new Stage();
 
         spriteBatch = new SpriteBatch();
         BackGround = new Texture("BackGround/Background.jpg");
@@ -50,6 +55,18 @@ public class LevelScreen implements Screen {
 
         stage = new Stage(viewport, spriteBatch);
         Gdx.input.setInputProcessor(stage);
+        List<LevelGenerator.GameObject> levelObjects = LevelGenerator.loadLevel(1);
+        for (LevelGenerator.GameObject obj : levelObjects) {
+            Image image = new Image(obj.texture);
+            image.setPosition(obj.x, obj.y);
+            if (obj.type.equals("block")) {
+                image.setSize(obj.width, obj.height);
+            } else if (obj.type.equals("target")) {
+                image.setSize(obj.radius * 2, obj.radius * 2);
+            }
+            stage.addActor(image);
+        }
+    }
 
         // Setting up the buttons
         setupLevelButtons();
@@ -143,5 +160,6 @@ public class LevelScreen implements Screen {
         Level_3.dispose();
         BackTexture.dispose();
         stage.dispose();
+        batch.dispose();
     }
 }
