@@ -4,14 +4,14 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 
 public class Level_1 implements Screen {
 
@@ -21,16 +21,19 @@ public class Level_1 implements Screen {
     private FitViewport viewport;
 
     private SpriteBatch spriteBatch;
-    private Texture BackGround, RedbirdTexture, PinkbirdTexture, GlassTexture, CatapultTexture, BackTexture;
+    private Texture BackGround, RedbirdTexture, PinkbirdTexture, GlassTexture, CatapultTexture, BackTexture, PigTexture;
 
     private World world;
-    private Body redBirdBody1, pinkBirdBody, redBirdBody2, leftGlassBody, rightGlassBody, topGlassBody, catapultBody, groundBody;
+    private Body[] birdBodies;
+    private Body leftGlassBody, rightGlassBody, topGlassBody, catapultBody, groundBody, pigBody;
 
-    private float backButtonX, backButtonY, backButtonRadius;  // Store the position and radius of the back button
+    private float backButtonX, backButtonY, backButtonRadius;
+    private int currentBirdIndex = 0; // Tracks the active bird
+    private boolean isBirdLaunched = false;
 
     public Level_1(Game game) {
         this.game = game;
-        this.backButtonRadius = 35;  // Set the radius of the back button to 35
+        this.backButtonRadius = 35;
     }
 
     @Override
@@ -49,29 +52,30 @@ public class Level_1 implements Screen {
         GlassTexture = new Texture("Blocks/Glass.png");
         CatapultTexture = new Texture("Extras/Catapult.png");
         BackTexture = new Texture("Extras/Back.png");
+        PigTexture = new Texture("Pigs/Normal_Pigs.png");
 
-        world = new World(new Vector2(0, -9.8f), true);  // Gravity
+        world = new World(new Vector2(0, -9.8f), true);
 
-        createGroundBody();  // Create the ground
+        createGroundBody();
         createBirdBodies();
-        createGlassBodies();
+        createGlassBodiesWithGravity(); // Updated to have gravity
         createCatapultBody();
 
-        // Calculate the back button position (top-right corner)
-        backButtonX = camera.viewportWidth - 100; // Adjust the X position for the button
-        backButtonY = camera.viewportHeight - 50; // Adjust the Y position for the button
+        backButtonX = camera.viewportWidth - 100;
+        backButtonY = camera.viewportHeight - 50;
 
-        // Set the input processor for back button
         Gdx.input.setInputProcessor(new InputAdapter() {
             @Override
             public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-                // Adjust screenY because libGDX's Y-axis increases downwards, while the camera Y-axis increases upwards
-                screenY = Gdx.graphics.getHeight() - screenY;  // Flip the Y coordinate
-
-                // Check if the touch is inside the circular back button
+                screenY = Gdx.graphics.getHeight() - screenY;
                 float distance = Vector2.dst(screenX, screenY, backButtonX, backButtonY);
                 if (distance <= backButtonRadius) {
-                    goBackToPreviousScreen(); // Go back to the previous screen
+                    goBackToPreviousScreen();
+                    return true;
+                }
+
+                if (!isBirdLaunched && currentBirdIndex < birdBodies.length) {
+                    launchBird(screenX, screenY);
                     return true;
                 }
                 return false;
@@ -84,15 +88,18 @@ public class Level_1 implements Screen {
     }
 
     private void createBirdBodies() {
-        redBirdBody1 = createCircleBody(125, 80, 37.5f, BodyDef.BodyType.DynamicBody);
-        pinkBirdBody = createCircleBody(200, 80, 37.5f, BodyDef.BodyType.DynamicBody);
-        redBirdBody2 = createCircleBody(275, 80, 37.5f, BodyDef.BodyType.DynamicBody);
+        birdBodies = new Body[3];
+        birdBodies[0] = createCircleBody(125, 80, 37.5f, BodyDef.BodyType.DynamicBody);
+        birdBodies[1] = createCircleBody(200, 80, 37.5f, BodyDef.BodyType.DynamicBody);
+        birdBodies[2] = createCircleBody(275, 80, 37.5f, BodyDef.BodyType.DynamicBody);
     }
 
-    private void createGlassBodies() {
-        leftGlassBody = createRectangleBody(880, 90, 35, 175, BodyDef.BodyType.StaticBody);
-        rightGlassBody = createRectangleBody(1080, 90, 35, 175, BodyDef.BodyType.StaticBody);
-        topGlassBody = createRectangleBody(980, 260, 200, 30, BodyDef.BodyType.StaticBody);
+    private void createGlassBodiesWithGravity() {
+        leftGlassBody = createRectangleBody(880, 90, 35, 175, BodyDef.BodyType.DynamicBody);
+        rightGlassBody = createRectangleBody(1080, 90, 35, 175, BodyDef.BodyType.DynamicBody);
+        topGlassBody = createRectangleBody(980, 260, 200, 30, BodyDef.BodyType.DynamicBody);
+
+        pigBody = createCircleBody(980, 150, 20, BodyDef.BodyType.DynamicBody);
     }
 
     private void createCatapultBody() {
@@ -137,6 +144,13 @@ public class Level_1 implements Screen {
         return body;
     }
 
+    private void launchBird(float screenX, float screenY) {
+        Body bird = birdBodies[currentBirdIndex];
+        Vector2 launchDirection = new Vector2(screenX - bird.getPosition().x, screenY - bird.getPosition().y).nor().scl(-500);
+        bird.applyLinearImpulse(launchDirection, bird.getWorldCenter(), true);
+        isBirdLaunched = true;
+    }
+
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height, true);
@@ -146,65 +160,68 @@ public class Level_1 implements Screen {
     @Override
     public void render(float delta) {
         ScreenUtils.clear(1f, 1f, 1f, 1f);
-        world.step(1 / 60f, 6, 2);  // Update Box2D world
+        world.step(1 / 60f, 6, 2);
+
+        if (isBirdLaunched) {
+            Body activeBird = birdBodies[currentBirdIndex];
+            if (activeBird.getLinearVelocity().len() < 0.1 && activeBird.getPosition().y < 0.1) {
+                currentBirdIndex++;
+                isBirdLaunched = false;
+            }
+        }
 
         spriteBatch.begin();
         spriteBatch.draw(BackGround, 0, 0, camera.viewportWidth, camera.viewportHeight);
 
-        // Draw birds at their body positions
-        float firstBirdX = redBirdBody1.getPosition().x - 37.5f;
-        float firstBirdY = redBirdBody1.getPosition().y - 37.5f;
-        spriteBatch.draw(RedbirdTexture, firstBirdX, firstBirdY, 75, 75);
-        
-        float secondBirdX = pinkBirdBody.getPosition().x - 37.5f;
-        float secondBirdY = pinkBirdBody.getPosition().y - 37.5f;
-        spriteBatch.draw(PinkbirdTexture, secondBirdX, secondBirdY, 75, 75);
-
-        float thirdBirdX = redBirdBody2.getPosition().x - 37.5f;
-        float thirdBirdY = redBirdBody2.getPosition().y - 37.5f;
-        spriteBatch.draw(RedbirdTexture, thirdBirdX, thirdBirdY, 75, 75);
-
-        // Draw glass blocks at their body positions
-        float leftGlassX = leftGlassBody.getPosition().x - 17.5f;
-        float leftGlassY = leftGlassBody.getPosition().y - 87.5f;
-        spriteBatch.draw(GlassTexture, leftGlassX, leftGlassY, 35, 175);
-        
-        float rightGlassX = rightGlassBody.getPosition().x - 17.5f;
-        float rightGlassY = rightGlassBody.getPosition().y - 87.5f;
-        spriteBatch.draw(GlassTexture, rightGlassX, rightGlassY, 35, 175);
-        
-        float topGlassX = topGlassBody.getPosition().x - 100f;
-        float topGlassY = topGlassBody.getPosition().y - 0.5f;
-        spriteBatch.draw(GlassTexture, topGlassX, topGlassY, 200, 30);
-
-        // Draw catapult at its body position
-        float catapultX = catapultBody.getPosition().x - 26.25f;
-        float catapultY = catapultBody.getPosition().y - 62.5f;
-        spriteBatch.draw(CatapultTexture, catapultX, catapultY, 52.5f, 125);
-
-        // Draw circular back button at the top-right corner
-        spriteBatch.draw(BackTexture, backButtonX - backButtonRadius, backButtonY - backButtonRadius, backButtonRadius * 2, backButtonRadius * 2);
+        drawBirds();
+        drawGlassBlocks();
+        drawPig();
+        drawCatapult();
+        drawBackButton();
 
         spriteBatch.end();
+
     }
 
-    private void goBackToPreviousScreen() {
-        game.setScreen(new LevelScreen(game));  // Assuming you have a MainMenu screen
+    private void drawBirds() {
+        for (int i = 0; i < birdBodies.length; i++) {
+            if (i >= currentBirdIndex) {
+                drawSprite(i == 1 ? PinkbirdTexture : RedbirdTexture, birdBodies[i], 37.5f);
+            }
+        }
     }
 
-    @Override
-    public void hide() {
-        dispose();
+    private void drawGlassBlocks() {
+        drawSprite(GlassTexture, leftGlassBody, 17.5f, 87.5f);
+        drawSprite(GlassTexture, rightGlassBody, 17.5f, 87.5f);
+        drawSprite(GlassTexture, topGlassBody, 100f, 15f);
     }
 
-    @Override
-    public void pause() {}
+    private void drawPig() {
+        drawSprite(PigTexture, pigBody, 20f);
+    }
 
-    @Override
-    public void resume() {}
+    private void drawCatapult() {
+        drawSprite(CatapultTexture, catapultBody, 26.25f, 62.5f);
+    }
+
+    private void drawBackButton() {
+        spriteBatch.draw(BackTexture, backButtonX - backButtonRadius, backButtonY - backButtonRadius, backButtonRadius * 2, backButtonRadius * 2);
+    }
+
+    private void drawSprite(Texture texture, Body body, float radius) {
+        drawSprite(texture, body, radius, radius);
+    }
+
+    private void drawSprite(Texture texture, Body body, float widthHalf, float heightHalf) {
+        float x = body.getPosition().x - widthHalf;
+        float y = body.getPosition().y - heightHalf;
+        spriteBatch.draw(texture, x, y, widthHalf * 2, heightHalf * 2);
+    }
 
     @Override
     public void dispose() {
+        shapeRenderer.dispose();
         spriteBatch.dispose();
         BackGround.dispose();
         RedbirdTexture.dispose();
@@ -212,5 +229,24 @@ public class Level_1 implements Screen {
         GlassTexture.dispose();
         CatapultTexture.dispose();
         BackTexture.dispose();
+        PigTexture.dispose();
+        world.dispose();
+    }
+
+    private void goBackToPreviousScreen() {
+        // Implement back navigation logic here
+        game.setScreen(new LevelScreen(game));
+    }
+
+    @Override
+    public void pause() {
+    }
+
+    @Override
+    public void resume() {
+    }
+
+    @Override
+    public void hide() {
     }
 }
