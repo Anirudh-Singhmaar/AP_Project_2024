@@ -1,4 +1,3 @@
-//insert a package here
 package Main.Screens;
 
 import java.util.ArrayList;
