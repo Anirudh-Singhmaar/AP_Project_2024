@@ -61,6 +61,8 @@ public class Level_1 implements Screen {
         createGlassBodiesWithGravity(); // Updated to have gravity
         createCatapultBody();
 
+        loadNextBirdOntoCatapult(); // Position the first bird on the catapult
+
         backButtonX = camera.viewportWidth - 100;
         backButtonY = camera.viewportHeight - 50;
 
@@ -89,7 +91,7 @@ public class Level_1 implements Screen {
 
     private void createBirdBodies() {
         birdBodies = new Body[3];
-        birdBodies[0] = createCircleBody(125, 80, 37.5f, BodyDef.BodyType.DynamicBody);
+        birdBodies[0] = createCircleBody(350, 125, 37.5f, BodyDef.BodyType.DynamicBody); // Initially loaded on the catapult
         birdBodies[1] = createCircleBody(200, 80, 37.5f, BodyDef.BodyType.DynamicBody);
         birdBodies[2] = createCircleBody(275, 80, 37.5f, BodyDef.BodyType.DynamicBody);
     }
@@ -151,6 +153,15 @@ public class Level_1 implements Screen {
         isBirdLaunched = true;
     }
 
+    private void loadNextBirdOntoCatapult() {
+        if (currentBirdIndex < birdBodies.length) {
+            Body nextBird = birdBodies[currentBirdIndex];
+            nextBird.setTransform(350, 125, 0); // Position the bird on the catapult
+            nextBird.setLinearVelocity(0, 0); // Reset velocity
+            nextBird.setAngularVelocity(0);
+        }
+    }
+
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height, true);
@@ -166,7 +177,10 @@ public class Level_1 implements Screen {
             Body activeBird = birdBodies[currentBirdIndex];
             if (activeBird.getLinearVelocity().len() < 0.1 && activeBird.getPosition().y < 0.1) {
                 currentBirdIndex++;
-                isBirdLaunched = false;
+                if (currentBirdIndex < birdBodies.length) {
+                    isBirdLaunched = false;
+                    loadNextBirdOntoCatapult(); // Load the next bird
+                }
             }
         }
 
@@ -180,7 +194,6 @@ public class Level_1 implements Screen {
         drawBackButton();
 
         spriteBatch.end();
-
     }
 
     private void drawBirds() {
@@ -198,7 +211,7 @@ public class Level_1 implements Screen {
     }
 
     private void drawPig() {
-        drawSprite(PigTexture, pigBody, 20f);
+        drawSprite(PigTexture, pigBody, 37.5f);
     }
 
     private void drawCatapult() {
@@ -219,6 +232,20 @@ public class Level_1 implements Screen {
         spriteBatch.draw(texture, x, y, widthHalf * 2, heightHalf * 2);
     }
 
+    private void goBackToPreviousScreen() {
+        game.setScreen(new LevelScreen(game));
+        dispose();
+    }
+
+    @Override
+    public void pause() {}
+
+    @Override
+    public void resume() {}
+
+    @Override
+    public void hide() {}
+
     @Override
     public void dispose() {
         shapeRenderer.dispose();
@@ -231,22 +258,5 @@ public class Level_1 implements Screen {
         BackTexture.dispose();
         PigTexture.dispose();
         world.dispose();
-    }
-
-    private void goBackToPreviousScreen() {
-        // Implement back navigation logic here
-        game.setScreen(new LevelScreen(game));
-    }
-
-    @Override
-    public void pause() {
-    }
-
-    @Override
-    public void resume() {
-    }
-
-    @Override
-    public void hide() {
     }
 }

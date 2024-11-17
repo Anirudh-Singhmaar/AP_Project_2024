@@ -2,15 +2,16 @@ package Main.Screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 
 public class Level_3 implements Screen {
 
@@ -19,39 +20,146 @@ public class Level_3 implements Screen {
     private OrthographicCamera camera;
     private FitViewport viewport;
 
-    // Declare SpriteBatch and Texture
     private SpriteBatch spriteBatch;
-    private Texture BackGround;
-    private Texture RedbirdTexture;  // Texture for the bird
-    private Texture PinkbirdTexture;  // Texture for the bird
-    private Texture StoneTexture;  // New StoneTexture for the rectangles
-    private Texture CatapultTexture;
-    private Texture BackTexture;
+    private Texture BackGround, RedbirdTexture, PinkbirdTexture, GlassTexture, CatapultTexture, BackTexture, PigTexture;
+
+    private World world;
+    private Body[] birdBodies;
+    private Body leftGlassBody, rightGlassBody, topGlassBody, catapultBody, groundBody, pigBody;
+
+    private float backButtonX, backButtonY, backButtonRadius;
+    private int currentBirdIndex = 0; // Tracks the active bird
+    private boolean isBirdLaunched = false;
 
     public Level_3(Game game) {
         this.game = game;
+        this.backButtonRadius = 35;
     }
 
     @Override
     public void show() {
         shapeRenderer = new ShapeRenderer();
         camera = new OrthographicCamera();
-        viewport = new FitViewport(1280, 720, camera);  // Setting the viewport dimensions
+        viewport = new FitViewport(1280, 720, camera);
         viewport.apply();
-        camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);  // Center the camera
+        camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
 
-        // Initialize SpriteBatch
         spriteBatch = new SpriteBatch();
-
-        // Load the texture for the bird from the Birds folder
         BackGround = new Texture("BackGround/LevelBackground.jpg");
-        RedbirdTexture = new Texture("Birds/RED_Bird.png");  // Correct path to the bird.png file
-        PinkbirdTexture = new Texture("Birds/PINK_Bird.png");  // Correct path to the bird.png file
-        StoneTexture = new Texture("Blocks/Stone.png");  // Correct path to the wood texture file
+        RedbirdTexture = new Texture("Birds/RED_Bird.png");
+        PinkbirdTexture = new Texture("Birds/PINK_Bird.png");
+        GlassTexture = new Texture("Blocks/Stone.png");
         CatapultTexture = new Texture("Extras/Catapult.png");
         BackTexture = new Texture("Extras/Back.png");
+        PigTexture = new Texture("Pigs/Normal_Pigs.png");
 
+        world = new World(new Vector2(0, -9.8f), true);
+
+        createGroundBody();
+        createBirdBodies();
+        createGlassBodiesWithGravity(); // Updated to have gravity
+        createCatapultBody();
+
+        loadNextBirdOntoCatapult(); // Position the first bird on the catapult
+
+        backButtonX = camera.viewportWidth - 100;
+        backButtonY = camera.viewportHeight - 50;
+
+        Gdx.input.setInputProcessor(new InputAdapter() {
+            @Override
+            public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+                screenY = Gdx.graphics.getHeight() - screenY;
+                float distance = Vector2.dst(screenX, screenY, backButtonX, backButtonY);
+                if (distance <= backButtonRadius) {
+                    goBackToPreviousScreen();
+                    return true;
+                }
+
+                if (!isBirdLaunched && currentBirdIndex < birdBodies.length) {
+                    launchBird(screenX, screenY);
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
+
+    private void createGroundBody() {
+        groundBody = createRectangleBody(camera.viewportWidth / 2, 10, camera.viewportWidth, 20, BodyDef.BodyType.StaticBody);
+    }
+
+    private void createBirdBodies() {
+        birdBodies = new Body[3];
+        birdBodies[0] = createCircleBody(350, 125, 37.5f, BodyDef.BodyType.DynamicBody); // Initially loaded on the catapult
+        birdBodies[1] = createCircleBody(200, 80, 37.5f, BodyDef.BodyType.DynamicBody);
+        birdBodies[2] = createCircleBody(275, 80, 37.5f, BodyDef.BodyType.DynamicBody);
+    }
+
+    private void createGlassBodiesWithGravity() {
+        leftGlassBody = createRectangleBody(880, 90, 35, 175, BodyDef.BodyType.DynamicBody);
+        rightGlassBody = createRectangleBody(1080, 90, 35, 175, BodyDef.BodyType.DynamicBody);
+        topGlassBody = createRectangleBody(980, 260, 200, 30, BodyDef.BodyType.DynamicBody);
+
+        pigBody = createCircleBody(980, 150, 20, BodyDef.BodyType.DynamicBody);
+    }
+
+    private void createCatapultBody() {
+        catapultBody = createRectangleBody(350, 80, 52.5f, 125, BodyDef.BodyType.StaticBody);
+    }
+
+    private Body createCircleBody(float x, float y, float radius, BodyDef.BodyType type) {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = type;
+        bodyDef.position.set(x, y);
+        Body body = world.createBody(bodyDef);
+
+        CircleShape shape = new CircleShape();
+        shape.setRadius(radius);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 1f;
+        fixtureDef.restitution = 0.5f;
+        body.createFixture(fixtureDef);
+
+        shape.dispose();
+        return body;
+    }
+
+    private Body createRectangleBody(float x, float y, float width, float height, BodyDef.BodyType type) {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = type;
+        bodyDef.position.set(x, y);
+        Body body = world.createBody(bodyDef);
+
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(width / 2, height / 2);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 1f;
+        fixtureDef.restitution = 0.3f;
+        body.createFixture(fixtureDef);
+
+        shape.dispose();
+        return body;
+    }
+
+    private void launchBird(float screenX, float screenY) {
+        Body bird = birdBodies[currentBirdIndex];
+        Vector2 launchDirection = new Vector2(screenX - bird.getPosition().x, screenY - bird.getPosition().y).nor().scl(-500);
+        bird.applyLinearImpulse(launchDirection, bird.getWorldCenter(), true);
+        isBirdLaunched = true;
+    }
+
+    private void loadNextBirdOntoCatapult() {
+        if (currentBirdIndex < birdBodies.length) {
+            Body nextBird = birdBodies[currentBirdIndex];
+            nextBird.setTransform(350, 125, 0); // Position the bird on the catapult
+            nextBird.setLinearVelocity(0, 0); // Reset velocity
+            nextBird.setAngularVelocity(0);
+        }
     }
 
     @Override
@@ -62,140 +170,93 @@ public class Level_3 implements Screen {
 
     @Override
     public void render(float delta) {
-        // Clear the screen
         ScreenUtils.clear(1f, 1f, 1f, 1f);
+        world.step(1 / 60f, 6, 2);
+
+        if (isBirdLaunched) {
+            Body activeBird = birdBodies[currentBirdIndex];
+            if (activeBird.getLinearVelocity().len() < 0.1 && activeBird.getPosition().y < 0.1) {
+                currentBirdIndex++;
+                if (currentBirdIndex < birdBodies.length) {
+                    isBirdLaunched = false;
+                    loadNextBirdOntoCatapult(); // Load the next bird
+                }
+            }
+        }
 
         spriteBatch.begin();
-        spriteBatch.draw(BackGround, 0, 0, camera.viewportWidth, camera.viewportHeight);  // Draw the background
-        spriteBatch.end();
+        spriteBatch.draw(BackGround, 0, 0, camera.viewportWidth, camera.viewportHeight);
 
-        // Set projection for shape renderer and sprite batch
-        shapeRenderer.setProjectionMatrix(camera.combined);
-        spriteBatch.setProjectionMatrix(camera.combined);
-
-        // Begin drawing shapes (rectangles for the box shape)
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        float paddingRight = 200;  // Padding from the right side of the screen
-        float rectWidth = 35;  // Width of the rectangles (for sides and top)
-        float rectHeight = 175;  // Height of the vertical rectangles
-        float topRectHeight = 50;  // Height of the top rectangle
-        float bottomRectHeight = 20;  // Height of the bottom rectangle (floor)
-
-        // Positions for the box shape (relative to the viewport)
-        float rightX = camera.viewportWidth - paddingRight;  // X position for the right rectangle
-        float leftX = rightX - 200;  // X position for the left rectangle (200px to the left of the right rectangle)
-        float bottomY = 50;  // Y position for the bottom rectangle (floor)
-        float topY = bottomY + rectHeight;  // Y position for the top of the box
-        float verticalY = bottomY + bottomRectHeight;  // Y position for the vertical rectangles (above the floor)
-
-        // Draw Circle in the Top Right Corner
-        shapeRenderer.setColor(Color.YELLOW); // Set color for the circle
-        float circleRadius = 25; // Define the radius of the circle
-        float circleX = camera.viewportWidth - circleRadius - 20; // Position 20 pixels from the right edge
-        float circleY = camera.viewportHeight - circleRadius - 20; // Position 20 pixels from the top edge
-        shapeRenderer.circle(circleX, circleY, circleRadius); // Draw the circle
-        shapeRenderer.end();
-
-        // Begin sprite batch to draw the texture within the circle
-        spriteBatch.begin();
-
-        // Adjust the texture size to match the circle diameter (2 * circleRadius)
-        float textureWidth = 2 * circleRadius;
-        float textureHeight = 2 * circleRadius;
-
-        // Draw the texture at the same position as the circle, but adjusting the origin for texture drawing
-        spriteBatch.draw(BackTexture, circleX - circleRadius, circleY - circleRadius, textureWidth, textureHeight);
+        drawBirds();
+        drawGlassBlocks();
+        drawPig();
+        drawCatapult();
+        drawBackButton();
 
         spriteBatch.end();
+    }
 
-        // Begin drawing the wood rectangles with SpriteBatch
-        spriteBatch.begin();
-        // Draw the left rectangle (vertical) using StoneTexture
-        spriteBatch.draw(StoneTexture, leftX, verticalY, rectWidth, rectHeight);
-
-        // Draw the right rectangle (vertical) using StoneTexture
-        spriteBatch.draw(StoneTexture, rightX, verticalY, rectWidth, rectHeight);
-
-        // Draw the top rectangle (horizontal) using StoneTexture
-        spriteBatch.draw(StoneTexture, leftX, topY, rightX - leftX + rectWidth, 2*topRectHeight/3);
-
-        // End SpriteBatch
-        spriteBatch.end();
-
-        // Begin drawing sprites with SpriteBatch
-        spriteBatch.begin();
-
-        // Bird and Catapult parameters
-        float paddingLeft = 125;
-        float CircleWidth = 75;  // Adjust the size of the bird sprite
-        float horizontalSpacing = 75;  // Horizontal spacing between birds
-
-        float CatapultWidth = 35;  // Width of the rectangles (for sides and top)
-        float CatapultHeight = 125;  // Height of the vertical rectangles
-
-        // Adjust Y position so that the birds are above the floor
-        float GroundY = 60;  // Adjust Y position for birds to touch the ground
-        float offset = 60;
-
-        // X positions for the three birds (horizontally spaced)
-        float firstBirdX = paddingLeft;
-        float secondBirdX = firstBirdX + horizontalSpacing;
-        float thirdBirdX = secondBirdX + horizontalSpacing;
-        float CatapX = thirdBirdX + horizontalSpacing;
-
-        // Draw the first bird
-        spriteBatch.draw(RedbirdTexture, firstBirdX, GroundY, CircleWidth, CircleWidth);  // Adjust size as needed
-
-        // Draw the second bird
-        spriteBatch.draw(PinkbirdTexture, secondBirdX, GroundY, CircleWidth, CircleWidth);
-
-        // Draw the third bird
-        spriteBatch.draw(RedbirdTexture, thirdBirdX, GroundY + offset, CircleWidth, CircleWidth);
-
-        spriteBatch.draw(CatapultTexture, CatapX, GroundY, 3*CatapultWidth/2, CatapultHeight);
-
-        spriteBatch.end();
-
-        if (Gdx.input.isButtonJustPressed(0)) {  // 0 is the left mouse button
-            float mouseX = Gdx.input.getX();
-            float mouseY = Gdx.input.getY();
-
-            // Convert mouse coordinates to world coordinates
-            Vector3 mousePos = new Vector3(mouseX, mouseY, 0);
-            camera.unproject(mousePos);  // Convert the screen coordinates to world coordinates
-
-            // Check if the mouse is within the bounds of Circle
-            float dx = mousePos.x - circleX; // Distance in x direction
-            float dy = mousePos.y - circleY; // Distance in y direction
-            float distance = (float) Math.sqrt(dx * dx + dy * dy); // Calculate distance
-
-            if (distance <= circleRadius) {
-                // Switch to the load screen
-                game.setScreen(new LevelScreen(game));  // Assuming you want to go back to LevelScreen
+    private void drawBirds() {
+        for (int i = 0; i < birdBodies.length; i++) {
+            if (i >= currentBirdIndex) {
+                drawSprite(i == 1 ? PinkbirdTexture : RedbirdTexture, birdBodies[i], 37.5f);
             }
         }
     }
 
-    @Override
-    public void pause() {
+    private void drawGlassBlocks() {
+        drawSprite(GlassTexture, leftGlassBody, 17.5f, 87.5f);
+        drawSprite(GlassTexture, rightGlassBody, 17.5f, 87.5f);
+        drawSprite(GlassTexture, topGlassBody, 100f, 15f);
     }
 
-    @Override
-    public void resume() {
+    private void drawPig() {
+        drawSprite(PigTexture, pigBody, 37.5f);
     }
 
-    @Override
-    public void hide() {
+    private void drawCatapult() {
+        drawSprite(CatapultTexture, catapultBody, 26.25f, 62.5f);
+    }
+
+    private void drawBackButton() {
+        spriteBatch.draw(BackTexture, backButtonX - backButtonRadius, backButtonY - backButtonRadius, backButtonRadius * 2, backButtonRadius * 2);
+    }
+
+    private void drawSprite(Texture texture, Body body, float radius) {
+        drawSprite(texture, body, radius, radius);
+    }
+
+    private void drawSprite(Texture texture, Body body, float widthHalf, float heightHalf) {
+        float x = body.getPosition().x - widthHalf;
+        float y = body.getPosition().y - heightHalf;
+        spriteBatch.draw(texture, x, y, widthHalf * 2, heightHalf * 2);
+    }
+
+    private void goBackToPreviousScreen() {
+        game.setScreen(new LevelScreen(game));
         dispose();
     }
 
     @Override
+    public void pause() {}
+
+    @Override
+    public void resume() {}
+
+    @Override
+    public void hide() {}
+
+    @Override
     public void dispose() {
         shapeRenderer.dispose();
-        spriteBatch.dispose();  // Dispose of SpriteBatch
+        spriteBatch.dispose();
+        BackGround.dispose();
         RedbirdTexture.dispose();
         PinkbirdTexture.dispose();
-        StoneTexture.dispose();  // Dispose of StoneTexture
+        GlassTexture.dispose();
         CatapultTexture.dispose();
+        BackTexture.dispose();
+        PigTexture.dispose();
+        world.dispose();
     }
 }

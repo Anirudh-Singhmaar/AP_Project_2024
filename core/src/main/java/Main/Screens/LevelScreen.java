@@ -1,7 +1,5 @@
 package Main.Screens;
 
-import java.util.List;
-
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -12,7 +10,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -50,22 +47,6 @@ public class LevelScreen implements Screen {
         Level_1 = new Texture("Level_Buttons/Level_1.png");
         Level_2 = new Texture("Level_Buttons/Level_2.png");
         Level_3 = new Texture("Level_Buttons/Level_3.png");
-
-        // Set up level objects (assuming LevelGenerator works correctly)
-        List<LevelGenerator.GameObject> levelObjects = LevelGenerator.loadLevel(2);
-        for (LevelGenerator.GameObject obj : LevelGenerator.loadLevel(2)) {
-            if (!obj.type.equals("catapult")) { // Skip catapult in level selector
-                Image image = new Image(obj.texture);
-                image.setPosition(obj.x, obj.y);
-                if (obj.type.equals("block")) {
-                    image.setSize(obj.width, obj.height);
-                } else if (obj.type.equals("target")) {
-                    image.setSize(obj.radius * 2, obj.radius * 2);
-                }
-                stage.addActor(image);
-            }
-        }
-        
 
         // Setup buttons
         setupLevelButtons();
