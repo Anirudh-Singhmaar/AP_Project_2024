@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
@@ -18,7 +17,6 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 
 public class LevelScreen implements Screen {
     private final Game game;
-    private ShapeRenderer shapeRenderer;
     private OrthographicCamera camera;
     private FitViewport viewport;
     private SpriteBatch spriteBatch;
@@ -52,11 +50,19 @@ public class LevelScreen implements Screen {
         setupLevelButtons();
         setupBackButton();
     }
-
     private void setupLevelButtons() {
+        // Button height and width (assuming buttons are all the same size)
+        float buttonWidth = Level_1.getWidth();
+        float buttonHeight = Level_1.getHeight();
+    
+        // Calculate center positions for each button
+        float centerX = viewport.getWorldWidth() / 2 - buttonWidth / 2;
+        float centerY = viewport.getWorldHeight() / 2;
+    
         // Level 1 Button
         ImageButton Level_1Button = new ImageButton(new TextureRegionDrawable(new TextureRegion(Level_1)));
-        Level_1Button.setPosition(camera.position.x - 300, camera.position.y - 75 / 2);
+        Level_1Button.setSize(buttonWidth, buttonHeight);
+        Level_1Button.setPosition(centerX - 300, centerY - buttonHeight / 2); // Offset for spacing
         Level_1Button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -64,10 +70,11 @@ public class LevelScreen implements Screen {
             }
         });
         stage.addActor(Level_1Button);
-
+    
         // Level 2 Button
         ImageButton Level_2Button = new ImageButton(new TextureRegionDrawable(new TextureRegion(Level_2)));
-        Level_2Button.setPosition(camera.position.x, camera.position.y - 75 / 2);
+        Level_2Button.setSize(buttonWidth, buttonHeight);
+        Level_2Button.setPosition(centerX, centerY - buttonHeight / 2); // Centered button
         Level_2Button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -75,10 +82,11 @@ public class LevelScreen implements Screen {
             }
         });
         stage.addActor(Level_2Button);
-
+    
         // Level 3 Button
         ImageButton Level_3Button = new ImageButton(new TextureRegionDrawable(new TextureRegion(Level_3)));
-        Level_3Button.setPosition(camera.position.x + 300, camera.position.y - 75 / 2);
+        Level_3Button.setSize(buttonWidth, buttonHeight);
+        Level_3Button.setPosition(centerX + 300, centerY - buttonHeight / 2); // Offset for spacing
         Level_3Button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -87,6 +95,7 @@ public class LevelScreen implements Screen {
         });
         stage.addActor(Level_3Button);
     }
+    
 
     private void setupBackButton() {
         ImageButton backButton = new ImageButton(new TextureRegionDrawable(new TextureRegion(BackTexture)));
