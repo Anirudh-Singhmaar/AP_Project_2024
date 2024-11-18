@@ -1,54 +1,53 @@
 package Main.Objects;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 
 public class Pig {
     private Body body;
     private Texture texture;
-    private int health;
+    private float width, height;
 
-    public Pig(World world, float x, float y, int health, Texture texture) {
-        this.health = health;
+    public Pig(World world, float x, float y, float width, float height, Texture texture) {
         this.texture = texture;
-        this.body = createPigBody(world, x, y);
+        this.width = width;
+        this.height = height;
+        this.body = createRectangleBody(world, x, y, width, height);
     }
 
-    private Body createPigBody(World world, float x, float y) {
+    private Body createRectangleBody(World world, float x, float y, float width, float height) {
         BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.type = BodyDef.BodyType.DynamicBody; // Pigs can move when hit
         bodyDef.position.set(x, y);
+
         Body body = world.createBody(bodyDef);
 
-        CircleShape shape = new CircleShape();
-        shape.setRadius(25f);  // Radius for the pig's body
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(width / 2, height / 2);
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 1f;
         fixtureDef.restitution = 0.3f;
+
         body.createFixture(fixtureDef);
-
         shape.dispose();
-        return body;
-    }
 
-    public void takeDamage(int damage) {
-        health -= damage;
-        if (health <= 0) {
-            // Handle pig destruction (e.g., remove pig from world, play sound, etc.)
-        }
+        return body;
     }
 
     public Body getBody() {
         return body;
     }
 
-    public Texture getTexture() {
-        return texture;
-    }
-
-    public int getHealth() {
-        return health;
+    public void draw(Batch batch) {
+        Vector2 position = body.getPosition();
+        batch.draw(texture, 
+            position.x - width / 2, 
+            position.y - height / 2, 
+            width, 
+            height);
     }
 }
