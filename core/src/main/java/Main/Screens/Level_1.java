@@ -58,7 +58,8 @@ public class Level_1 implements Screen {
 
         createGroundBody();
         createBirdBodies();
-        createGlassBodiesWithGravity(); // Updated to have gravity
+        createGlassBodies();
+        createPigBody();
         createCatapultBody();
 
         loadNextBirdOntoCatapult(); // Position the first bird on the catapult
@@ -96,14 +97,15 @@ public class Level_1 implements Screen {
         birdBodies[2] = createCircleBody(275, 80, 37.5f, BodyDef.BodyType.DynamicBody);
     }
 
-    private void createGlassBodiesWithGravity() {
+    private void createGlassBodies() {
         leftGlassBody = createRectangleBody(880, 90, 35, 175, BodyDef.BodyType.DynamicBody);
         rightGlassBody = createRectangleBody(1080, 90, 35, 175, BodyDef.BodyType.DynamicBody);
         topGlassBody = createRectangleBody(980, 260, 200, 30, BodyDef.BodyType.DynamicBody);
-
-        pigBody = createCircleBody(980, 150, 20, BodyDef.BodyType.DynamicBody);
     }
 
+    private void createPigBody() {
+        pigBody = createCircleBody(980, 120, 40f, BodyDef.BodyType.DynamicBody);
+    }
     private void createCatapultBody() {
         catapultBody = createRectangleBody(350, 80, 52.5f, 125, BodyDef.BodyType.StaticBody);
     }
