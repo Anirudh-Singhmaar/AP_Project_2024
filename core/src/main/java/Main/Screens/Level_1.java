@@ -21,11 +21,14 @@ public class Level_1 implements Screen {
     private FitViewport viewport;
 
     private SpriteBatch spriteBatch;
-    private Texture BackGround, RedbirdTexture, PinkbirdTexture, GlassTexture, CatapultTexture, BackTexture, PigTexture;
+    private Texture BackGround, RedbirdTexture, PinkbirdTexture, GlassTexture, CatapultTexture, BackTexture, PigTexture, WoodTexture;
 
     private World world;
     private Body[] birdBodies;
-    private Body leftGlassBody, rightGlassBody, topGlassBody, catapultBody, groundBody, pigBody;
+    private Body[] glassBodies;
+    private Body[] woodBodies;
+    private Body[] pigBodies;
+    private Body catapultBody, groundBody;
 
     private float backButtonX, backButtonY, backButtonRadius;
     private int currentBirdIndex = 0; // Tracks the active bird
@@ -50,6 +53,7 @@ public class Level_1 implements Screen {
         RedbirdTexture = new Texture("Birds/RED_Bird.png");
         PinkbirdTexture = new Texture("Birds/PINK_Bird.png");
         GlassTexture = new Texture("Blocks/Glass.png");
+        WoodTexture = new Texture("Blocks/Wood.png");
         CatapultTexture = new Texture("Extras/Catapult.png");
         BackTexture = new Texture("Extras/Back.png");
         PigTexture = new Texture("Pigs/Normal_Pigs.png");
@@ -59,7 +63,8 @@ public class Level_1 implements Screen {
         createGroundBody();
         createBirdBodies();
         createGlassBodies();
-        createPigBody();
+        createWoodBodies();
+        createPigBodies();
         createCatapultBody();
 
         loadNextBirdOntoCatapult(); // Position the first bird on the catapult
@@ -98,14 +103,26 @@ public class Level_1 implements Screen {
     }
 
     private void createGlassBodies() {
-        leftGlassBody = createRectangleBody(880, 90, 35, 175, BodyDef.BodyType.DynamicBody);
-        rightGlassBody = createRectangleBody(1080, 90, 35, 175, BodyDef.BodyType.DynamicBody);
-        topGlassBody = createRectangleBody(980, 260, 200, 30, BodyDef.BodyType.DynamicBody);
+        glassBodies = new Body[5];
+        glassBodies[0] = createRectangleBody(900, 200, 35, 90, BodyDef.BodyType.DynamicBody);
+        glassBodies[1] = createRectangleBody(940, 200, 35, 90, BodyDef.BodyType.DynamicBody);
+        glassBodies[2] = createRectangleBody(980, 200, 35, 90, BodyDef.BodyType.DynamicBody);
+        glassBodies[3] = createRectangleBody(1020, 200, 35, 90, BodyDef.BodyType.DynamicBody);
+        glassBodies[4] = createRectangleBody(1060, 200, 35, 90, BodyDef.BodyType.DynamicBody);
     }
 
-    private void createPigBody() {
-        pigBody = createCircleBody(980, 120, 40f, BodyDef.BodyType.DynamicBody);
+    private void createWoodBodies() {
+        woodBodies = new Body[2];
+        woodBodies[0] = createRectangleBody(950, 300, 200, 30, BodyDef.BodyType.DynamicBody);
+        woodBodies[1] = createRectangleBody(1050, 400, 100, 30, BodyDef.BodyType.DynamicBody);
     }
+
+    private void createPigBodies() {
+        pigBodies = new Body[2];
+        pigBodies[0] = createCircleBody(1000, 250, 40f, BodyDef.BodyType.DynamicBody);
+        pigBodies[1] = createCircleBody(1100, 450, 40f, BodyDef.BodyType.DynamicBody);
+    }
+
     private void createCatapultBody() {
         catapultBody = createRectangleBody(350, 80, 52.5f, 125, BodyDef.BodyType.StaticBody);
     }
@@ -123,6 +140,7 @@ public class Level_1 implements Screen {
         fixtureDef.shape = shape;
         fixtureDef.density = 1f;
         fixtureDef.restitution = 0.5f;
+        fixtureDef.friction = 1;
         body.createFixture(fixtureDef);
 
         shape.dispose();
@@ -191,7 +209,8 @@ public class Level_1 implements Screen {
 
         drawBirds();
         drawGlassBlocks();
-        drawPig();
+        drawWoodBlocks();
+        drawPigs();
         drawCatapult();
         drawBackButton();
 
@@ -207,13 +226,21 @@ public class Level_1 implements Screen {
     }
 
     private void drawGlassBlocks() {
-        drawSprite(GlassTexture, leftGlassBody, 17.5f, 87.5f);
-        drawSprite(GlassTexture, rightGlassBody, 17.5f, 87.5f);
-        drawSprite(GlassTexture, topGlassBody, 100f, 15f);
+        for (Body glassBody : glassBodies) {
+            drawSprite(GlassTexture, glassBody, 17.5f, 87.5f);
+        }
     }
 
-    private void drawPig() {
-        drawSprite(PigTexture, pigBody, 37.5f);
+    private void drawWoodBlocks() {
+        for (Body woodBody : woodBodies) {
+            drawSprite(WoodTexture, woodBody, 100f, 15f);
+        }
+    }
+
+    private void drawPigs() {
+        for (Body pigBody : pigBodies) {
+            drawSprite(PigTexture, pigBody, 37.5f);
+        }
     }
 
     private void drawCatapult() {
@@ -256,6 +283,7 @@ public class Level_1 implements Screen {
         RedbirdTexture.dispose();
         PinkbirdTexture.dispose();
         GlassTexture.dispose();
+        WoodTexture.dispose();
         CatapultTexture.dispose();
         BackTexture.dispose();
         PigTexture.dispose();
