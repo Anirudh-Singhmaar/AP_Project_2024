@@ -91,6 +91,26 @@ public class Level_1 implements Screen {
         });
     }
 
+    private Body createRectangleBody(float x, float y, float width, float height, BodyDef.BodyType type) {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = type;
+        bodyDef.position.set(x, y);
+        Body body = world.createBody(bodyDef);
+
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(width / 2, height / 2);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 1f;
+        fixtureDef.restitution = 0.1f;
+        fixtureDef.friction = 0.85f;
+        body.createFixture(fixtureDef);
+
+        shape.dispose();
+        return body;
+    }
+
     private void createGroundBody() {
         groundBody = createRectangleBody(camera.viewportWidth / 2, 10, camera.viewportWidth, 20, BodyDef.BodyType.StaticBody);
     }
@@ -106,8 +126,8 @@ public class Level_1 implements Screen {
         glassBodies = new Body[5];
         glassBodies[0] = createRectangleBody(900, 200, 35, 90, BodyDef.BodyType.DynamicBody);
         glassBodies[1] = createRectangleBody(940, 200, 35, 90, BodyDef.BodyType.DynamicBody);
-        glassBodies[2] = createRectangleBody(980, 200, 35, 90, BodyDef.BodyType.DynamicBody);
-        glassBodies[3] = createRectangleBody(1020, 200, 35, 90, BodyDef.BodyType.DynamicBody);
+        glassBodies[2] = createRectangleBody(1080, 260, 35, 90, BodyDef.BodyType.DynamicBody);
+        glassBodies[3] = createRectangleBody(1080, 200, 35, 90, BodyDef.BodyType.DynamicBody);
         glassBodies[4] = createRectangleBody(1060, 200, 35, 90, BodyDef.BodyType.DynamicBody);
     }
 
@@ -139,27 +159,8 @@ public class Level_1 implements Screen {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 1f;
-        fixtureDef.restitution = 0.5f;
+        fixtureDef.restitution = 0f;
         fixtureDef.friction = 1;
-        body.createFixture(fixtureDef);
-
-        shape.dispose();
-        return body;
-    }
-
-    private Body createRectangleBody(float x, float y, float width, float height, BodyDef.BodyType type) {
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = type;
-        bodyDef.position.set(x, y);
-        Body body = world.createBody(bodyDef);
-
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(width / 2, height / 2);
-
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.density = 1f;
-        fixtureDef.restitution = 0.3f;
         body.createFixture(fixtureDef);
 
         shape.dispose();
