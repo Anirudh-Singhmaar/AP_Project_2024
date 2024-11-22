@@ -19,7 +19,7 @@ public class Level_1 implements Screen {
     private ShapeRenderer shapeRenderer;
     private OrthographicCamera camera;
     private FitViewport viewport;
-
+    private static final float PIXELS_PER_METER = 1f;
     private SpriteBatch spriteBatch;
     private Texture BackGround, RedbirdTexture, PinkbirdTexture, GlassTexture, CatapultTexture, BackTexture, PigTexture, WoodTexture;
 
@@ -91,26 +91,6 @@ public class Level_1 implements Screen {
         });
     }
 
-    private Body createRectangleBody(float x, float y, float width, float height, BodyDef.BodyType type) {
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = type;
-        bodyDef.position.set(x, y);
-        Body body = world.createBody(bodyDef);
-
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(width / 2, height / 2);
-
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.density = 1f;
-        fixtureDef.restitution = 0.1f;
-        fixtureDef.friction = 0.85f;
-        body.createFixture(fixtureDef);
-
-        shape.dispose();
-        return body;
-    }
-
     private void createGroundBody() {
         groundBody = createRectangleBody(camera.viewportWidth / 2, 10, camera.viewportWidth, 20, BodyDef.BodyType.StaticBody);
     }
@@ -124,11 +104,13 @@ public class Level_1 implements Screen {
 
     private void createGlassBodies() {
         glassBodies = new Body[5];
-        glassBodies[0] = createRectangleBody(900, 200, 35, 90, BodyDef.BodyType.DynamicBody);
-        glassBodies[1] = createRectangleBody(940, 200, 35, 90, BodyDef.BodyType.DynamicBody);
-        glassBodies[2] = createRectangleBody(1080, 260, 35, 90, BodyDef.BodyType.DynamicBody);
-        glassBodies[3] = createRectangleBody(1080, 200, 35, 90, BodyDef.BodyType.DynamicBody);
-        glassBodies[4] = createRectangleBody(1060, 200, 35, 90, BodyDef.BodyType.DynamicBody);
+        float glassWidth = 17f / 2;  // Half width in meters
+        float glassHeight = 90f / 2; // Half height in meters
+        glassBodies[0] = createRectangleBody(900 / PIXELS_PER_METER, 200 / PIXELS_PER_METER, glassWidth, glassHeight, BodyDef.BodyType.DynamicBody);
+        glassBodies[1] = createRectangleBody(940 / PIXELS_PER_METER, 200 / PIXELS_PER_METER, glassWidth, glassHeight, BodyDef.BodyType.DynamicBody);
+        glassBodies[2] = createRectangleBody(980 / PIXELS_PER_METER, 200 / PIXELS_PER_METER, glassWidth, glassHeight, BodyDef.BodyType.DynamicBody);
+        glassBodies[3] = createRectangleBody(1020 / PIXELS_PER_METER, 200 / PIXELS_PER_METER, glassWidth, glassHeight, BodyDef.BodyType.DynamicBody);
+        glassBodies[4] = createRectangleBody(1060 / PIXELS_PER_METER, 200 / PIXELS_PER_METER, glassWidth, glassHeight, BodyDef.BodyType.DynamicBody);
     }
 
     private void createWoodBodies() {
@@ -159,8 +141,27 @@ public class Level_1 implements Screen {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 1f;
-        fixtureDef.restitution = 0f;
+        fixtureDef.restitution = 0.5f;
         fixtureDef.friction = 1;
+        body.createFixture(fixtureDef);
+
+        shape.dispose();
+        return body;
+    }
+
+    private Body createRectangleBody(float x, float y, float width, float height, BodyDef.BodyType type) {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = type;
+        bodyDef.position.set(x, y);
+        Body body = world.createBody(bodyDef);
+
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(width / 2, height / 2);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 1f;
+        fixtureDef.restitution = 0.3f;
         body.createFixture(fixtureDef);
 
         shape.dispose();
@@ -259,8 +260,16 @@ public class Level_1 implements Screen {
     private void drawSprite(Texture texture, Body body, float widthHalf, float heightHalf) {
         float x = body.getPosition().x - widthHalf;
         float y = body.getPosition().y - heightHalf;
-        spriteBatch.draw(texture, x, y, widthHalf * 2, heightHalf * 2);
+    
+        // Convert dimensions from meters to pixels
+        spriteBatch.draw(texture,
+            (x - widthHalf) * PIXELS_PER_METER, // X in pixels
+            (y - heightHalf) * PIXELS_PER_METER, // Y in pixels
+            (widthHalf * 2) * PIXELS_PER_METER, // Width in pixels
+            (heightHalf * 2) * PIXELS_PER_METER  // Height in pixels
+        );
     }
+    
 
     private void goBackToPreviousScreen() {
         game.setScreen(new LevelScreen(game));
