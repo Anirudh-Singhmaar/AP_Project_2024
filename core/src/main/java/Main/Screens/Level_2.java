@@ -119,20 +119,22 @@ public class Level_2 implements Screen {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = type;
         bodyDef.position.set(x, y);
+    
         Body body = world.createBody(bodyDef);
-
+    
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(width / 2, height / 2);
-
+    
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density = 1f;
-        fixtureDef.restitution = 0.3f;
+        fixtureDef.density = 0.5f; // Lightweight for wood
+        fixtureDef.friction = 0.4f; // Low friction
+        fixtureDef.restitution = 0.2f; // Low bounciness
         body.createFixture(fixtureDef);
-
+    
         shape.dispose();
         return body;
-    }
+    }    
 
     private void launchBird(float screenX, float screenY) {
         Body bird = birdBodies[currentBirdIndex];
@@ -154,19 +156,21 @@ public class Level_2 implements Screen {
     public void render(float delta) {
         ScreenUtils.clear(1f, 1f, 1f, 1f);
         world.step(1 / 60f, 6, 2);
-    
-        // Handle off-screen birds
+
+
         if (isBirdLaunched) {
             if (currentBirdIndex < birdBodies.length) {
                 Body activeBird = birdBodies[currentBirdIndex];
-                // Check if the bird is off-screen horizontally
-                if (activeBird.getPosition().x < -2 || activeBird.getPosition().x > 15) {
-                    activeBird.setLinearVelocity(0, 0);
-                    world.destroyBody(activeBird);
-
+                float velocity = activeBird.getLinearVelocity().len(); // Calculate the velocity magnitude
+    
+                // Check if the bird is off-screen horizontally or its velocity is near zero
+                if (activeBird.getPosition().x < -2 || activeBird.getPosition().x > 15 || velocity < 0.1f) {
+                    activeBird.setLinearVelocity(0, 0); // Stop any remaining velocity
+                    world.destroyBody(activeBird); // Destroy the current bird body
+    
                     currentBirdIndex++;
-
-                    if (currentBirdIndex < birdBodies.length) { 
+    
+                    if (currentBirdIndex < birdBodies.length) {
                         isBirdLaunched = false;
                         loadNextBirdOntoCatapult();
                     } else {
@@ -201,6 +205,7 @@ public class Level_2 implements Screen {
         drawBackButton();
         shapeRenderer.end();
     }
+    
 
     private void drawGround() {
         drawRectangle(groundBody, 12.8f * PIXELS_PER_METER, 0.2f * PIXELS_PER_METER);
@@ -229,11 +234,19 @@ public class Level_2 implements Screen {
     }
 
     private void drawRectangle(Body body, float width, float height) {
-        shapeRenderer.rect(body.getPosition().x * PIXELS_PER_METER - width / 2,
-                           body.getPosition().y * PIXELS_PER_METER - height / 2,
-                           width, height);
+        shapeRenderer.rect(
+            body.getPosition().x * PIXELS_PER_METER - width / 2,
+            body.getPosition().y * PIXELS_PER_METER - height / 2,
+            width / 2, // Origin X (center for rotation)
+            height / 2, // Origin Y (center for rotation)
+            width,
+            height,
+            1, // Scale X
+            1, // Scale Y
+            (float) Math.toDegrees(body.getAngle()) // Convert radians to degrees for rotation
+        );
     }
-
+    
     private void drawCircle(Body body, float radius) {
         shapeRenderer.circle(body.getPosition().x * PIXELS_PER_METER,
                              body.getPosition().y * PIXELS_PER_METER,
