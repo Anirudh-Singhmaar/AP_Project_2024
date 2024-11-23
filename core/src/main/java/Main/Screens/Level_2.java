@@ -13,7 +13,11 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -97,11 +101,52 @@ public class Level_2 implements Screen {
                 return false;
             }
         });
+
+        world.setContactListener(new ContactListener() {
+            @Override
+            public void beginContact(Contact contact) {
+                // Get the two bodies involved in the collision
+                Body bodyA = contact.getFixtureA().getBody();
+                Body bodyB = contact.getFixtureB().getBody();
+
+                // Check if the pig is involved in the collision
+                if ((bodyA == pigBody && (bodyB == leftWoodBody || bodyB == rightWoodBody || bodyB == topWoodBody || isBirdBody(bodyB))) ||
+                    (bodyB == pigBody && (bodyA == leftWoodBody || bodyA == rightWoodBody || bodyA == topWoodBody || isBirdBody(bodyA)))) {
+                    isPigDestroyed = true;
+                }
+            }
+
+            @Override
+            public void endContact(Contact contact) {
+                // No action needed here
+            }
+
+            @Override
+            public void preSolve(Contact contact, Manifold oldManifold) {
+                // No action needed here
+            }
+
+            @Override
+            public void postSolve(Contact contact, ContactImpulse impulse) {
+                // No action needed here
+            }
+        });
+
     }
 
     private void createGroundBody() {
         groundBody = createRectangleBody(6.5f, 0.1f, 12.8f, 0.2f, BodyDef.BodyType.StaticBody);
     }
+
+    private boolean isBirdBody(Body body) {
+        for (Body birdBody : birdBodies) {
+            if (birdBody == body) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
 
     private void createBirdBodies() {
         birdBodies = new Body[3];
@@ -184,12 +229,11 @@ public class Level_2 implements Screen {
         world.step(1 / 60f, 6, 2); // Simulate physics
 
         if (pigBody != null && !isPigDestroyed) {
-            float pigVelocity = pigBody.getLinearVelocity().len();
-            if (pigBody.getPosition().y < 0 || pigVelocity < 0.1f) { // Pig is either stationary or fell
-                isPigDestroyed = true;
-                world.destroyBody(pigBody); // Destroy the pig's body
+            if (isPigDestroyed && pigBody != null) {
+                world.destroyBody(pigBody); // Destroy pig body
                 pigBody = null;
             }
+            
         }
         if (isPigDestroyed && currentBirdIndex >= birdBodies.length) {
             game.setScreen(new WinningScreen(game)); // Transition to winning screen

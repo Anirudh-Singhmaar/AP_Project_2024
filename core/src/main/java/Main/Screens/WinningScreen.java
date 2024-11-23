@@ -20,14 +20,14 @@ public class WinningScreen implements Screen {
         this.stage = new Stage(new ScreenViewport());
 
         // Create a winning image
-        Image winImage = new Image(new Texture("BackGround/Win.png")); // Add this image to your assets
+        Image winImage = new Image(new Texture("BackGround/Win.jpg")); // Add this image to your assets
         winImage.setPosition(Gdx.graphics.getWidth() / 2f - winImage.getWidth() / 2f, 
                              Gdx.graphics.getHeight() / 2f);
 
         // Create a TextButtonStyle
         BitmapFont font = new BitmapFont(); // Use the default font or load a custom one
-        TextureRegionDrawable upDrawable = new TextureRegionDrawable(new TextureRegion(new Texture("LoadGame_Button/Up.png")));
-        TextureRegionDrawable downDrawable = new TextureRegionDrawable(new TextureRegion(new Texture("LoadGame_Button/Bottom.png")));
+        TextureRegionDrawable upDrawable = new TextureRegionDrawable(new TextureRegion(new Texture("LoadGame_Buttons/Up.jpg")));
+        TextureRegionDrawable downDrawable = new TextureRegionDrawable(new TextureRegion(new Texture("LoadGame_Buttons/Down.jpg")));
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle(upDrawable, downDrawable, null, font);
 
         // Create buttons
