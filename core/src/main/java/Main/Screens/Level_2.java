@@ -28,7 +28,7 @@ public class Level_2 implements Screen {
 
     
     // Textures
-    private Texture birdTexture, woodTexture, pigTexture, groundTexture, catapultTexture;
+    private Texture birdTexture, woodTexture, pigTexture, groundTexture, catapultTexture,backButtonTexture,BackGround;
 
     private float backButtonX, backButtonY, backButtonRadius;
     private int currentBirdIndex = 0;
@@ -56,8 +56,11 @@ public class Level_2 implements Screen {
         birdTexture = new Texture("Birds/RED_Bird.png");
         woodTexture = new Texture("Blocks/Wood.png");
         pigTexture = new Texture("Pigs/Golden_pigs.png");
-        groundTexture = new Texture("BackGround/Background.jpg");
+        groundTexture = new Texture("Extras/Ground.jpg");
         catapultTexture = new Texture("Extras/Catapult.png");
+        backButtonTexture = new Texture("Extras/Back.png");
+        
+        BackGround = new Texture("BackGround/LevelBackground.jpg");
 
         createGroundBody();
         createBirdBodies();
@@ -169,14 +172,13 @@ public class Level_2 implements Screen {
 
     @Override
     public void render(float delta) {
-        ScreenUtils.clear(1f, 1f, 1f, 1f);
-        world.step(1 / 60f, 6, 2);
-
-
+        ScreenUtils.clear(1f, 1f, 1f, 1f); // Clear the screen
+        world.step(1 / 60f, 6, 2); // Simulate physics
+    
         if (isBirdLaunched) {
             if (currentBirdIndex < birdBodies.length) {
                 Body activeBird = birdBodies[currentBirdIndex];
-                float velocity = activeBird.getLinearVelocity().len(); // Calculate the velocity magnitude
+                float velocity = activeBird.getLinearVelocity().len(); // Velocity magnitude
     
                 // Check if the bird is off-screen horizontally or its velocity is near zero
                 if (activeBird.getPosition().x < -2 || activeBird.getPosition().x > 15 || velocity < 0.1f) {
@@ -196,74 +198,25 @@ public class Level_2 implements Screen {
             }
         }
     
-        debugRenderer.render(world, camera.combined);
+        debugRenderer.render(world, camera.combined); // Render Box2D debug information
     
-        // Render shapes and other game elements
-        shapeRenderer.setProjectionMatrix(camera.combined);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        drawGround();
-        drawBirds();
-        drawWoodBlocks();
-        drawPig();
-        drawCatapult();
-        drawBackButton();
-        shapeRenderer.end();
-
-        // Render the Textures
+        spriteBatch.setProjectionMatrix(camera.combined);
         spriteBatch.begin();
-        drawSprites();
+        spriteBatch.draw(BackGround, 0, 0, camera.viewportWidth, camera.viewportHeight);
+        drawSprites(); // Render the textures
+        drawBackButtonTexture(); // Replace the back button's circle with a texture if needed
+    
         spriteBatch.end();
     }
     
-
-    private void drawGround() {
-        drawRectangle(groundBody, 12.8f * PIXELS_PER_METER, 0.2f * PIXELS_PER_METER);
-    }
-
-    private void drawBirds() {
-        for (int i = 0; i < birdBodies.length; i++) {
-            if (i >= currentBirdIndex) {
-                drawCircle(birdBodies[i], 0.375f * PIXELS_PER_METER);
-            }
-        }
-    }
-
-    private void drawWoodBlocks() {
-        drawRectangle(leftWoodBody, 0.35f * PIXELS_PER_METER, 1.75f * PIXELS_PER_METER);
-        drawRectangle(rightWoodBody, 0.35f * PIXELS_PER_METER, 1.75f * PIXELS_PER_METER);
-        drawRectangle(topWoodBody, 2f * PIXELS_PER_METER, 0.3f * PIXELS_PER_METER);
-    }
-
-    private void drawPig() {
-        drawCircle(pigBody, 0.375f * PIXELS_PER_METER);
-    }
-
-    private void drawCatapult() {
-        drawRectangle(catapultBody, 0.525f * PIXELS_PER_METER, 1.25f * PIXELS_PER_METER);
-    }
-
-    private void drawRectangle(Body body, float width, float height) {
-        shapeRenderer.rect(
-            body.getPosition().x * PIXELS_PER_METER - width / 2,
-            body.getPosition().y * PIXELS_PER_METER - height / 2,
-            width / 2, // Origin X (center for rotation)
-            height / 2, // Origin Y (center for rotation)
-            width,
-            height,
-            1, // Scale X
-            1, // Scale Y
-            (float) Math.toDegrees(body.getAngle()) // Convert radians to degrees for rotation
+    private void drawBackButtonTexture() {
+        spriteBatch.draw(
+            backButtonTexture,
+            backButtonX * PIXELS_PER_METER - backButtonRadius, 
+            backButtonY * PIXELS_PER_METER - backButtonRadius, 
+            backButtonRadius * 2, 
+            backButtonRadius * 2
         );
-    }
-    
-    private void drawCircle(Body body, float radius) {
-        shapeRenderer.circle(body.getPosition().x * PIXELS_PER_METER,
-                             body.getPosition().y * PIXELS_PER_METER,
-                             radius);
-    }
-
-    private void drawBackButton() {
-        shapeRenderer.circle(backButtonX * PIXELS_PER_METER, backButtonY * PIXELS_PER_METER, backButtonRadius);
     }
 
     private void goBackToPreviousScreen() {
