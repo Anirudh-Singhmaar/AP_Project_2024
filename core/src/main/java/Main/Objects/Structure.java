@@ -8,11 +8,13 @@ public class Structure {
     private Body body;
     private Texture texture;
     private float width, height;
+    private int health;
 
-    public Structure(World world, float x, float y, float width, float height, Texture texture) {
+    public Structure(World world, float x, float y, float width, float height, int health, Texture texture) {
         this.texture = texture;
-        this.width = width; // Visual width
-        this.height = height; // Visual height
+        this.width = width;
+        this.height = height;
+        this.health = health;
         this.body = createRectangleBody(world, x, y, width, height);
     }
 
@@ -38,6 +40,16 @@ public class Structure {
         return body;
     }
 
+    // Method to apply damage to the structure
+    public void takeDamage(int damage) {
+        health -= damage;
+        if (health <= 0) {
+            // The structure is destroyed when health reaches 0
+            health = 0;
+            body.setActive(false); // Disable the body if it's destroyed
+        }
+    }
+
     public void draw(Batch batch) {
         batch.draw(texture, 
             body.getPosition().x - width / 2, 
@@ -48,5 +60,14 @@ public class Structure {
 
     public Body getBody() {
         return body;
+    }
+
+    // Getters for the dimensions of the structure
+    public float getWidth() {
+        return width;
+    }
+
+    public float getHeight() {
+        return height;
     }
 }
