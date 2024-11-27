@@ -6,6 +6,7 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -22,6 +23,7 @@ public class Level_3 implements Screen {
     private OrthographicCamera camera;
     private FitViewport viewport;
     private SpriteBatch spriteBatch;
+    private BitmapFont font;
 
     private World world;
     private Body[] birdBodies;
@@ -30,6 +32,9 @@ public class Level_3 implements Screen {
 
     private Sprite birdSprite, verticalStoneSprite, horizontalStoneSprite, pigSprite;
     private Sprite groundSprite, catapultSprite, backButtonSprite, backgroundSprite;
+
+    private boolean isLevelWon = false;
+    private boolean isLevelLost = false;
 
     private float backButtonX, backButtonY, backButtonRadius;
     private int currentBirdIndex = 0;
@@ -74,6 +79,10 @@ public class Level_3 implements Screen {
         backButtonX = 100 / PIXELS_PER_METER;
         backButtonY = 680 / PIXELS_PER_METER;
 
+        // Initialize BitmapFont
+        font = new BitmapFont();  // Default font
+        font.getData().setScale(2);  // Scale the font for visibility
+
         Gdx.input.setInputProcessor(new InputAdapter() {
             @Override
             public boolean touchDown(int screenX, int screenY, int pointer, int button) {
@@ -98,7 +107,7 @@ public class Level_3 implements Screen {
     }
 
     private void createBirdBodies() {
-        birdBodies = new Body[3];
+        birdBodies = new Body[3];  // Creating an array of 3 birds
         birdBodies[0] = createCircleBody(3.5f, 1.25f, 0.375f, BodyDef.BodyType.DynamicBody);
         birdBodies[1] = createCircleBody(2f, 0.8f, 0.375f, BodyDef.BodyType.DynamicBody);
         birdBodies[2] = createCircleBody(2.75f, 0.8f, 0.375f, BodyDef.BodyType.DynamicBody);
@@ -152,10 +161,12 @@ public class Level_3 implements Screen {
     }
 
     private void launchBird(float screenX, float screenY) {
-        Body bird = birdBodies[currentBirdIndex];
-        Vector2 launchDirection = new Vector2(screenX - bird.getPosition().x, screenY - bird.getPosition().y).nor().scl(10);
-        bird.setLinearVelocity(launchDirection);
-        isBirdLaunched = true;
+        if (currentBirdIndex < birdBodies.length) {
+            Body bird = birdBodies[currentBirdIndex];
+            Vector2 launchDirection = new Vector2(screenX - bird.getPosition().x, screenY - bird.getPosition().y).nor().scl(10);
+            bird.setLinearVelocity(launchDirection);
+            isBirdLaunched = true;
+        }
     }
     
     private void updateBirdStatus(float delta) {
@@ -169,8 +180,33 @@ public class Level_3 implements Screen {
         }
     }
 
+    private void renderEndScreen() {
+        spriteBatch.begin();
+        if (isLevelWon) {
+            // Display the win screen
+            font.draw(spriteBatch, "You Win!", 400, 360);
+        } else if (isLevelLost) {
+            // Display the lose screen
+            font.draw(spriteBatch, "You Lose!", 400, 360);
+        }
+        spriteBatch.end();
+    }
+    
+    private void checkWinCondition() {
+        // Check if all pigs are destroyed, for example
+        if (pigBody.getPosition().y < 0) {  // Assuming pig is destroyed when it falls off-screen
+            isLevelWon = true;
+        }
+    }
+    
+    private void checkLoseCondition() {
+        // Check if all birds have been used or launched
+        if (currentBirdIndex >= birdBodies.length && isBirdLaunched) {
+            isLevelLost = true;
+        }
+    }
+    
     private void loadNextBird() {
-        // Check if there are more birds left to launch
         if (currentBirdIndex < birdBodies.length - 1) {
             currentBirdIndex++; // Increment to load the next bird
     
@@ -185,31 +221,37 @@ public class Level_3 implements Screen {
                                    nextBird.getPosition().y * PIXELS_PER_METER - birdSprite.getHeight() / 2);
     
             isBirdLaunched = false; // Set the bird as not launched
-        } else {
-            // If there are no birds left to load, we might want to reset the game or show a message
-            System.out.println("All birds used!");
         }
     }
     
-
     private void goBackToPreviousScreen() {
         game.setScreen(new LevelScreen(game));
     }
     
     @Override
     public void render(float delta) {
-        ScreenUtils.clear(1, 1, 1, 1);
-        camera.update();
-        spriteBatch.setProjectionMatrix(camera.combined);
+        // Check if the game is won or lost
+        checkWinCondition();
+        checkLoseCondition();
 
-        spriteBatch.begin();
-        drawSprites(); // Drawing the current sprites
-        spriteBatch.end();
+        // Render the win/lose screen if the level is won or lost
+        if (isLevelWon || isLevelLost) {
+            renderEndScreen();
+        } else {
+            // Otherwise, render the normal gameplay
+            ScreenUtils.clear(1, 1, 1, 1);
+            camera.update();
+            spriteBatch.setProjectionMatrix(camera.combined);
 
-        debugRenderer.render(world, camera.combined);
-        world.step(1 / 60f, 6, 2);
+            spriteBatch.begin();
+            drawSprites(); // Drawing the current sprites
+            spriteBatch.end();
 
-        updateBirdStatus(delta); // Check if it's time to load the next bird
+            debugRenderer.render(world, camera.combined);
+            world.step(1 / 60f, 6, 2);
+
+            updateBirdStatus(delta); // Check if it's time to load the next bird
+        }
     }
 
     private void drawSprites() {
