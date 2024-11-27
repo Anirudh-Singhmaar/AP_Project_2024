@@ -1,31 +1,25 @@
 package Main.Objects;
 
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 
 public class Catapult {
+    private Body body;
+    private Sprite sprite;
 
-    private World world;
-    private Body catapultBody;
-    private Texture texture;
-    private float width, height;
-
-    public Catapult(World world, float x, float y, float width, float height, Texture texture) {
-        this.world = world;
-        this.texture = texture;
-        this.width = width;
-        this.height = height;
-
-        createCatapultBody(x, y);
+    public Catapult(World world, Sprite sprite, float x, float y, float width, float height) {
+        this.sprite = sprite;
+        this.body = createRectangleBody(world, x, y, width, height);
     }
 
-    private void createCatapultBody(float x, float y) {
+    private Body createRectangleBody(World world, float x, float y, float width, float height) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.StaticBody;
         bodyDef.position.set(x, y);
-
-        catapultBody = world.createBody(bodyDef);
+        Body body = world.createBody(bodyDef);
 
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(width / 2, height / 2);
@@ -33,24 +27,24 @@ public class Catapult {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 1f;
-        fixtureDef.friction = 0.5f;
-
-        catapultBody.createFixture(fixtureDef);
+        body.createFixture(fixtureDef);
         shape.dispose();
+        return body;
     }
 
-    public void draw(SpriteBatch spriteBatch) {
-        spriteBatch.draw(texture,
-                catapultBody.getPosition().x - width / 2,
-                catapultBody.getPosition().y - height / 2,
-                width, height);
+    public void draw(SpriteBatch spriteBatch, float pixelsPerMeter) {
+        Vector2 position = body.getPosition();
+        float angle = body.getAngle();
+
+        sprite.setSize(2 * pixelsPerMeter, 2 * pixelsPerMeter);
+        sprite.setPosition(position.x * pixelsPerMeter - sprite.getWidth() / 2,
+                           position.y * pixelsPerMeter - sprite.getHeight() / 2);
+        sprite.setOrigin(sprite.getWidth() / 2, sprite.getHeight() / 2);
+        sprite.setRotation(angle * MathUtils.radiansToDegrees);
+        sprite.draw(spriteBatch);
     }
 
     public Body getBody() {
-        return catapultBody;
-    }
-
-    public void dispose() {
-        texture.dispose();
+        return body;
     }
 }

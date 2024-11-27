@@ -25,10 +25,10 @@ public class Level_1 implements Screen {
 
     private World world;
     private Body[] birdBodies;
-    private Body leftVerticalWoodBody, rightVerticalWoodBody, topHorizontalWoodBody, catapultBody, groundBody, pigBody;
+    private Body leftVerticalGlassBody, rightVerticalGlassBody, topHorizontalGlassBody, catapultBody, groundBody, pigBody;
     private Box2DDebugRenderer debugRenderer;
 
-    private Sprite birdSprite, verticalWoodSprite, horizontalWoodSprite, pigSprite;
+    private Sprite birdSprite, verticalGlassSprite, horizontalGlassSprite, pigSprite;
     private Sprite groundSprite, catapultSprite, backButtonSprite, backgroundSprite;
 
     private float backButtonX, backButtonY, backButtonRadius;
@@ -54,9 +54,9 @@ public class Level_1 implements Screen {
         debugRenderer = new Box2DDebugRenderer();
 
         birdSprite = new Sprite(new Texture("Birds/RED_Bird.png"));
-        verticalWoodSprite= new Sprite(new Texture("Blocks/Wood.png"));
-        horizontalWoodSprite = new Sprite(new Texture("Blocks/Wood.png"));
-        pigSprite = new Sprite(new Texture("Pigs/Golden_pigs.png"));
+        verticalGlassSprite= new Sprite(new Texture("Blocks/Glass.png"));
+        horizontalGlassSprite = new Sprite(new Texture("Blocks/Glass.png"));
+        pigSprite = new Sprite(new Texture("Pigs/Normal_pigs.png"));
         groundSprite = new Sprite(new Texture("Extras/Ground.jpg"));
         catapultSprite = new Sprite(new Texture("Extras/Catapult.png"));
         backButtonSprite = new Sprite(new Texture("Extras/Back.png"));
@@ -68,7 +68,7 @@ public class Level_1 implements Screen {
     
         createGroundBody();
         createBirdBodies();
-        createWoodBodiesWithGravity();
+        createGlassBodiesWithGravity();
         createCatapultBody();
 
         backButtonX = 100 / PIXELS_PER_METER;
@@ -104,10 +104,10 @@ public class Level_1 implements Screen {
         birdBodies[2] = createCircleBody(2.75f, 0.8f, 0.375f, BodyDef.BodyType.DynamicBody);
     }
 
-    private void createWoodBodiesWithGravity() {
-        leftVerticalWoodBody = createRectangleBody(8.8f, 1.5f, 0.35f, 1.75f, BodyDef.BodyType.DynamicBody);
-        rightVerticalWoodBody = createRectangleBody(10.8f, 1.5f, 0.35f, 1.75f, BodyDef.BodyType.DynamicBody);
-        topHorizontalWoodBody = createRectangleBody(9.8f, 2.6f, 2f, 0.3f, BodyDef.BodyType.DynamicBody);
+    private void createGlassBodiesWithGravity() {
+        leftVerticalGlassBody = createRectangleBody(8.8f, 1.5f, 0.35f, 1.75f, BodyDef.BodyType.DynamicBody);
+        rightVerticalGlassBody = createRectangleBody(10.8f, 1.5f, 0.35f, 1.75f, BodyDef.BodyType.DynamicBody);
+        topHorizontalGlassBody = createRectangleBody(9.8f, 2.6f, 2f, 0.3f, BodyDef.BodyType.DynamicBody);
         pigBody = createCircleBody(9.8f, 1.5f, 0.35f, BodyDef.BodyType.DynamicBody);
     }
 
@@ -215,10 +215,10 @@ public class Level_1 implements Screen {
     private void drawSprites() {
         backgroundSprite.draw(spriteBatch);
     
-        // Draw the wood blocks for the inverted "U"
-        drawWoodSprite(verticalWoodSprite, leftVerticalWoodBody);
-        drawWoodSprite(verticalWoodSprite, rightVerticalWoodBody);
-        drawWoodSprite(horizontalWoodSprite, topHorizontalWoodBody);
+        // Draw the Glass blocks for the inverted "U"
+        drawGlassSprite(verticalGlassSprite, leftVerticalGlassBody);
+        drawGlassSprite(verticalGlassSprite, rightVerticalGlassBody);
+        drawGlassSprite(horizontalGlassSprite, topHorizontalGlassBody);
     
         // Draw the pig in the middle of the "U"
         drawPigSprite(pigSprite, pigBody);
@@ -291,7 +291,7 @@ public class Level_1 implements Screen {
     }
     
 
-    private void drawWoodSprite(Sprite sprite, Body body) {
+    private void drawGlassSprite(Sprite sprite, Body body) {
         // Get the position and rotation of the body
         Vector2 position = body.getPosition();
         float angle = body.getAngle() * MathUtils.radiansToDegrees;
