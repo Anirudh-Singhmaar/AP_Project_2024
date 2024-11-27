@@ -94,7 +94,7 @@ public class Level_3 implements Screen {
     }
 
     private void createGroundBody() {
-        groundBody = createRectangleBody(6.5f, 0.1f, 12.8f, 0.2f, BodyDef.BodyType.StaticBody);
+        groundBody = createRectangleBody(6.5f, 0.1f, 12.8f, 0.5f, BodyDef.BodyType.StaticBody);
     }
 
     private void createBirdBodies() {
@@ -215,6 +215,11 @@ public class Level_3 implements Screen {
     private void drawSprites() {
         backgroundSprite.draw(spriteBatch);
     
+        // Draw the ground
+        groundSprite.setPosition(0, 0); // Assuming ground is at the bottom left of the screen
+        groundSprite.setSize(1280f, 50f); // Set ground size based on screen width and desired height
+        groundSprite.draw(spriteBatch);
+        
         // Draw the Stone blocks for the inverted "U"
         drawStoneSprite(verticalStoneSprite, leftVerticalStoneBody);
         drawStoneSprite(verticalStoneSprite, rightVerticalStoneBody);

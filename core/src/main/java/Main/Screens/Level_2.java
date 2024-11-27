@@ -215,6 +215,11 @@ public class Level_2 implements Screen {
     private void drawSprites() {
         backgroundSprite.draw(spriteBatch);
     
+        // Draw the ground
+        groundSprite.setPosition(0, 0); // Assuming ground is at the bottom left of the screen
+        groundSprite.setSize(1280f, 50f); // Set ground size based on screen width and desired height
+        groundSprite.draw(spriteBatch);
+        
         // Draw the wood blocks for the inverted "U"
         drawWoodSprite(verticalWoodSprite, leftVerticalWoodBody);
         drawWoodSprite(verticalWoodSprite, rightVerticalWoodBody);
