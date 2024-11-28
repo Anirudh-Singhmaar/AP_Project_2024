@@ -194,7 +194,7 @@ public class Level_1 implements Screen {
     
     private void checkWinCondition() {
         // Check if all pigs are destroyed, for example
-        if (pigBody.getPosition().y < 0) {  // Assuming pig is destroyed when it falls off-screen
+        if (pigBody.getPosition().y < 0 || pigBody == null) {  // Assuming pig is destroyed when it falls off-screen
             isLevelWon = true;
         }
     }
@@ -209,7 +209,7 @@ public class Level_1 implements Screen {
     private void loadNextBird() {
         if (currentBirdIndex < birdBodies.length - 1) {
             currentBirdIndex++; // Increment to load the next bird
-    
+        
             Body nextBird = birdBodies[currentBirdIndex];
             // Reset the bird's position near the catapult
             nextBird.setTransform(3.5f, 1.25f, 0); // Set position to the catapult's start point
@@ -218,8 +218,8 @@ public class Level_1 implements Screen {
             
             // Update sprite position to match the body (if needed)
             birdSprite.setPosition(nextBird.getPosition().x * PIXELS_PER_METER - birdSprite.getWidth() / 2, 
-                                   nextBird.getPosition().y * PIXELS_PER_METER - birdSprite.getHeight() / 2);
-    
+                                nextBird.getPosition().y * PIXELS_PER_METER - birdSprite.getHeight() / 2);
+        
             isBirdLaunched = false; // Set the bird as not launched
         }
     }

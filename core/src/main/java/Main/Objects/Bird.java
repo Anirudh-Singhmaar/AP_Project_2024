@@ -8,17 +8,46 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 public class Bird extends Actor {
     private Body body;         // Physics body
     private Sprite sprite;     // Sprite for rendering
-    private float radius;      // Bird's radius
+    private float radius,x,y;      // Bird's radius
+    private World world;       // Box2D world
 
-    public Bird(Body body, Sprite sprite, float radius) {
-        this.body = body;
+    public Bird(World world,float x,float y, Sprite sprite, float radius) {
+        this.world = world;
         this.sprite = sprite;
         this.radius = radius;
+        this.x = x;
+        this.y = y;
+        
+        createBody();
+        
+        setSize(radius*2,radius*2);
+    }
 
-        // Set the initial size and position based on the sprite
-        setSize(sprite.getWidth(), sprite.getHeight());
-        setPosition(body.getPosition().x - sprite.getWidth() / 2, 
-                    body.getPosition().y - sprite.getHeight() / 2);
+    private void createBody() {
+        // Define the body definition (static, dynamic, or kinematic)
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.DynamicBody; // Dynamic body for physics
+        bodyDef.position.set(this.x, this.y); // Initial position (can be set dynamically)
+
+        // Create the body in the world
+        body = world.createBody(bodyDef);
+
+        // Define a circular shape for the bird's collision
+        CircleShape shape = new CircleShape();
+        shape.setRadius(radius); // Set the radius of the bird
+
+        // Define a fixture for the body
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 1.0f; // Set density (affects movement, gravity)
+        fixtureDef.friction = 0.3f; // Set friction (affects sliding)
+        fixtureDef.restitution = 0.5f; // Set restitution (bounciness)
+
+        // Attach the fixture to the body
+        body.createFixture(fixtureDef);
+
+        // Dispose of the shape after creating the fixture
+        shape.dispose();
     }
 
     public void dealDamage(Pig pig) {

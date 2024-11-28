@@ -66,7 +66,7 @@ public class LevelScreen implements Screen {
         Level_1Button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new Level_1(game));
+                game.setScreen(new Baselvl(game));
             }
         });
         stage.addActor(Level_1Button);
