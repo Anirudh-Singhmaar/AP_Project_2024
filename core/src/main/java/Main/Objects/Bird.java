@@ -1,85 +1,57 @@
 package Main.Objects;
 
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 
-public class Bird {
-    private Body body;
-    private Texture texture;
-    private float radius;
+public class Bird extends Actor {
+    private Body body;         // Physics body
+    private Sprite sprite;     // Sprite for rendering
+    private float radius;      // Bird's radius
 
-    public Bird(World world, float x, float y, Texture texture) {
-        this.texture = texture;
-        this.radius = 30f; // Set the bird's radius here
-        this.body = createCircleBody(world, x, y, radius);
+    public Bird(Body body, Sprite sprite, float radius) {
+        this.body = body;
+        this.sprite = sprite;
+        this.radius = radius;
+
+        // Set the initial size and position based on the sprite
+        setSize(sprite.getWidth(), sprite.getHeight());
+        setPosition(body.getPosition().x - sprite.getWidth() / 2, 
+                    body.getPosition().y - sprite.getHeight() / 2);
     }
 
-    private Body createCircleBody(World world, float x, float y, float radius) {
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(x, y);
+    public void dealDamage(Pig pig) {
+        pig.takeDamage(10);
+    }
 
-        Body body = world.createBody(bodyDef);
+    @Override
+    public void act(float delta) {
+        super.act(delta);
 
-        CircleShape shape = new CircleShape();
-        shape.setRadius(radius);
+        // Update the actor's position to match the body
+        setPosition(body.getPosition().x - sprite.getWidth() / 2, 
+                    body.getPosition().y - sprite.getHeight() / 2);
+        setRotation((float) Math.toDegrees(body.getAngle()));
+    }
 
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.density = 1f;
-        fixtureDef.restitution = 0.5f;
-
-        body.createFixture(fixtureDef);
-        shape.dispose();
-
-        return body;
+    @Override
+    public void draw(Batch batch, float parentAlpha) {
+        // Update sprite position and rotation
+        sprite.setPosition(getX(), getY());
+        sprite.setRotation(getRotation());
+        sprite.draw(batch);
     }
 
     public Body getBody() {
         return body;
     }
 
-    public void draw(com.badlogic.gdx.graphics.g2d.Batch batch) {
-        Vector2 position = body.getPosition();
-        // Scale texture to match the body's size (2 * radius)
-        float diameter = radius * 2;
-        batch.draw(texture, position.x - radius, position.y - radius, diameter, diameter);
+    public Sprite getSprite() {
+        return sprite;
     }
 
-    // Generalized method to deal damage to either a pig or a structure
-    public void dealDamage(Object target) {
-        if (target instanceof Pig) {
-            Pig pig = (Pig) target;
-            // Check if the bird collides with the pig
-            if (this.body.getPosition().dst(pig.getBody().getPosition()) < this.radius + pig.getRadius()) {
-                pig.takeDamage(20); // You can change the damage value as needed
-            }
-        }
-        else if (target instanceof Structure) {
-            Structure structure = (Structure) target;
-            // Get the position and dimensions of the structure
-            Vector2 structurePosition = structure.getBody().getPosition();
-            float structureWidth = structure.getWidth();
-            float structureHeight = structure.getHeight();
-            
-            // Calculate the closest point on the rectangle to the bird's position
-            float closestX = Math.max(structurePosition.x - structureWidth / 2, 
-                                      Math.min(this.body.getPosition().x, structurePosition.x + structureWidth / 2));
-            float closestY = Math.max(structurePosition.y - structureHeight / 2, 
-                                      Math.min(this.body.getPosition().y, structurePosition.y + structureHeight / 2));
-            
-            // Calculate the distance between the bird's center and the closest point on the structure
-            float distanceX = this.body.getPosition().x - closestX;
-            float distanceY = this.body.getPosition().y - closestY;
-            float distanceSquared = distanceX * distanceX + distanceY * distanceY;
-            
-            // Check if the distance is less than the bird's radius (collision detected)
-            if (distanceSquared < this.radius * this.radius) {
-                structure.takeDamage(20); // You can change the damage value as needed
-            }
-        }
-        
+    public float getRadius() {
+        return radius;
     }
 }

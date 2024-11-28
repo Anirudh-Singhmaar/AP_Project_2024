@@ -1,74 +1,65 @@
 package Main.Objects;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 
-public class Pig {
-    private Body body;
-    private Texture texture;
-    private float radius;
-    private int health;
+public class Pig extends Actor {
+    private Body body;         // Physics body
+    private Sprite sprite;     // Sprite for rendering
+    private int health;        // Pig's health
 
-    public Pig(World world, float x, float y, float radius, int health, Texture texture) {
-        this.texture = texture;
-        this.radius = radius;
-        this.health = health;
-        this.body = createCircleBody(world, x, y, radius);
+    public Pig(Body body, Sprite sprite) {
+        this.body = body;
+        this.sprite = sprite;
+        this.health = 20;
+
+        // Set the initial size and position based on the sprite
+        setSize(sprite.getWidth(), sprite.getHeight());
+        setPosition(body.getPosition().x - sprite.getWidth() / 2, 
+                    body.getPosition().y - sprite.getHeight() / 2);
     }
 
-    private Body createCircleBody(World world, float x, float y, float radius) {
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody; // Pigs can move when hit
-        bodyDef.position.set(x, y);
+    public void takeDamage(float damage) {
+        health -= damage;
+        if (health <= 0) {
+            onDestroyed(); // Handle destruction logic if health drops to zero
+        }
+    }
 
-        Body body = world.createBody(bodyDef);
+    private void onDestroyed() {
+        System.out.println("Pig destroyed!");
+        this.remove(); // Remove from the scene
+    }
 
-        // Create a circle shape
-        CircleShape shape = new CircleShape();
-        shape.setRadius(radius);
+    @Override
+    public void act(float delta) {
+        super.act(delta);
 
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.density = 1f;
-        fixtureDef.restitution = 0.3f;
+        // Update the actor's position to match the body
+        setPosition(body.getPosition().x - sprite.getWidth() / 2, 
+                    body.getPosition().y - sprite.getHeight() / 2);
+        setRotation((float) Math.toDegrees(body.getAngle()));
+    }
 
-        body.createFixture(fixtureDef);
-        shape.dispose();
-
-        return body;
+    @Override
+    public void draw(Batch batch, float parentAlpha) {
+        // Update sprite position and rotation
+        sprite.setPosition(getX(), getY());
+        sprite.setRotation(getRotation());
+        sprite.draw(batch);
     }
 
     public Body getBody() {
         return body;
     }
 
+    public Sprite getSprite() {
+        return sprite;
+    }
+
     public int getHealth() {
         return health;
-    }
-
-    public void takeDamage(int damage) {
-        health -= damage;
-        if (health <= 0) {
-            // Optionally, you can make the pig "die" by removing it from the world or changing its state
-            health = 0;
-            body.setActive(false); // Disables the body (if needed)
-        }
-    }
-
-    public void draw(Batch batch) {
-        Vector2 position = body.getPosition();
-        batch.draw(texture, 
-            position.x - radius,  // x position adjusted for center alignment
-            position.y - radius,  // y position adjusted for center alignment
-            radius * 2,           // width of the sprite
-            radius * 2            // height of the sprite
-        );
-    }
-
-    public float getRadius() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getRadius'");
     }
 }

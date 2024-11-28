@@ -1,73 +1,75 @@
 package Main.Objects;
 
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.physics.box2d.*;
 
-public class Structure {
-    private Body body;
-    private Texture texture;
-    private float width, height;
-    private int health;
+public class Structure extends Actor {
+    private Body body;         // Physics body
+    private Sprite sprite;     // Sprite for rendering the structure
+    private float width;       // Structure width
+    private float height;      // Structure height
+    private int durability;    // Structure durability
 
-    public Structure(World world, float x, float y, float width, float height, int health, Texture texture) {
-        this.texture = texture;
+    public Structure(Body body, Sprite sprite, float width, float height, int durability) {
+        this.body = body;
+        this.sprite = sprite;
         this.width = width;
         this.height = height;
-        this.health = health;
-        this.body = createRectangleBody(world, x, y, width, height);
+        this.durability = durability;
+
+        setSize(width, height);
+        setPosition(body.getPosition().x - width / 2, 
+                    body.getPosition().y - height / 2);
     }
 
-    private Body createRectangleBody(World world, float x, float y, float width, float height) {
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody; // Set to DynamicBody
-        bodyDef.position.set(x, y);
-
-        Body body = world.createBody(bodyDef);
-
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(width / 2, height / 2); // Box2D uses half-width and half-height
-
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.density = 1f; // Adjust density for realistic physics
-        fixtureDef.friction = 0.5f; // Friction between objects
-        fixtureDef.restitution = 0.1f; // Slight bounciness
-
-        body.createFixture(fixtureDef);
-        shape.dispose();
-
-        return body;
-    }
-
-    // Method to apply damage to the structure
     public void takeDamage(int damage) {
-        health -= damage;
-        if (health <= 0) {
-            // The structure is destroyed when health reaches 0
-            health = 0;
-            body.setActive(false); // Disable the body if it's destroyed
+        durability -= damage;
+        if (durability <= 0) {
+            onDestroyed(); // Handle destruction when durability reaches zero
         }
     }
 
-    public void draw(Batch batch) {
-        batch.draw(texture, 
-            body.getPosition().x - width / 2, 
-            body.getPosition().y - height / 2, 
-            width, 
-            height);
+    private void onDestroyed() {
+        this.remove(); // Remove from the scene
+    }
+
+    @Override
+    public void act(float delta) {
+        super.act(delta);
+
+        // Update the actor's position to match the body's position
+        setPosition(body.getPosition().x - width / 2, 
+                    body.getPosition().y - height / 2);
+        setRotation((float) Math.toDegrees(body.getAngle()));
+    }
+
+    @Override
+    public void draw(Batch batch, float parentAlpha) {
+        // Update sprite position and rotation
+        sprite.setPosition(getX(), getY());
+        sprite.setRotation(getRotation());
+        sprite.draw(batch);
     }
 
     public Body getBody() {
         return body;
     }
 
-    // Getters for the dimensions of the structure
+    public Sprite getSprite() {
+        return sprite;
+    }
+
     public float getWidth() {
         return width;
     }
 
     public float getHeight() {
         return height;
+    }
+
+    public int getDurability() {
+        return durability;
     }
 }
