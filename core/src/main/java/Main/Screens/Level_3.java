@@ -163,7 +163,7 @@ public class Level_3 implements Screen {
     private void launchBird(float screenX, float screenY) {
         if (currentBirdIndex < birdBodies.length) {
             Body bird = birdBodies[currentBirdIndex];
-            Vector2 launchDirection = new Vector2(screenX - bird.getPosition().x, screenY - bird.getPosition().y).nor().scl(10);
+            Vector2 launchDirection = new Vector2(screenX - bird.getPosition().x, screenY - bird.getPosition().y).nor().scl(-10);
             bird.setLinearVelocity(launchDirection);
             isBirdLaunched = true;
         }
