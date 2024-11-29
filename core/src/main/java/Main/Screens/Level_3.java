@@ -58,7 +58,7 @@ public class Level_3 implements Screen {
         world = new World(new Vector2(0, -9.8f), true);
         debugRenderer = new Box2DDebugRenderer();
 
-        birdSprite = new Sprite(new Texture("Birds/RED_Bird.png"));
+        birdSprite = new Sprite(new Texture("Birds/BLACK_Bird.png"));
         verticalStoneSprite= new Sprite(new Texture("Blocks/Stone.png"));
         horizontalStoneSprite = new Sprite(new Texture("Blocks/Stone.png"));
         pigSprite = new Sprite(new Texture("Pigs/EyePatch_Pig.png"));
